@@ -1,0 +1,10 @@
+.streamlit/secrets.toml
+.env
+.env.*
+__pycache__/
+*.pyc
+.venv/
+venv/
+node_modules/
+accounts.db
+accounts.db-*
