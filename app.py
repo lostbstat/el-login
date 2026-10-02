@@ -108,15 +108,11 @@ import json
 import os
 import re
 import shlex
-import secrets
 import sys
 import tempfile
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlsplit
-from http.cookies import SimpleCookie
-
-from auth import AuthError, AuthService
 
 
 def run_streamlit():
@@ -136,15 +132,6 @@ def run_streamlit():
 
     api_key = setting("GEMINI_API_KEY")
     model = setting("GEMINI_MODEL", DEFAULT_MODEL) or DEFAULT_MODEL
-    @st.cache_resource
-    def account_service(url, key):
-        return AuthService(Path(__file__).resolve().parent,
-                           {"SUPABASE_URL": url, "SUPABASE_PUBLISHABLE_KEY": key}, cloud=True)
-
-    auth = account_service(setting("SUPABASE_URL"), setting("SUPABASE_PUBLISHABLE_KEY") or setting("SUPABASE_ANON_KEY"))
-    if "auth_ticket" not in st.session_state:
-        st.session_state.auth_ticket = ""
-        st.session_state.auth_client = secrets.token_urlsafe(16)
     @st.cache_resource
     def public_assets(index_text, script_text, style_text):
         # Only these three public assets are served by the component.
@@ -171,7 +158,7 @@ def run_streamlit():
         st.session_state.gemini_last_request = None
 
     request = frontend(
-        config={**public_config(api_key), "auth": auth.config(st.session_state.auth_ticket)},
+        config=public_config(api_key),
         response=st.session_state.gemini_response,
         key="electricity-ui",
         default=None,
@@ -183,18 +170,8 @@ def run_streamlit():
             # Mark before calling Gemini: Streamlit reruns must not bill for the same request twice.
             st.session_state.gemini_last_request = request_id
             try:
-                payload = request.get("payload")
-                if not isinstance(payload, dict):
-                    raise AuthError("รูปแบบคำขอไม่ถูกต้อง", "invalid_request")
-                if str(payload.get("action", "")).startswith("auth."):
-                    result, ticket = auth.handle(payload, st.session_state.auth_ticket, client=st.session_state.auth_client)
-                    st.session_state.auth_ticket = ticket
-                else:
-                    auth.require_user(st.session_state.auth_ticket)
-                    result = {"text": generate(payload, api_key=api_key, model=model)}
-                answer = {"id": request_id, "ok": True, "result": result}
-            except AuthError as exc:
-                answer = {"id": request_id, "ok": False, "error": str(exc), "code": exc.code}
+                text = generate(request.get("payload"), api_key=api_key, model=model)
+                answer = {"id": request_id, "ok": True, "text": text}
             except GeminiError as exc:
                 answer = {"id": request_id, "ok": False, "error": str(exc), "code": exc.code}
             except Exception:
@@ -210,7 +187,7 @@ def local_settings(directory):
     if env_file.exists():
         for line in env_file.read_text(encoding="utf-8-sig").splitlines():
             key, separator, value = line.strip().removeprefix("export ").partition("=")
-            if separator and key.strip() in ("GEMINI_API_KEY", "GEMINI_MODEL", "PORT", "SUPABASE_URL", "SUPABASE_PUBLISHABLE_KEY", "SUPABASE_ANON_KEY"):
+            if separator and key.strip() in ("GEMINI_API_KEY", "GEMINI_MODEL", "PORT"):
                 try:
                     values[key.strip()] = " ".join(shlex.split(value, comments=True))
                 except ValueError:
@@ -222,7 +199,7 @@ def local_settings(directory):
             values.update(tomllib.loads(secrets_file.read_text(encoding="utf-8")))
         except ImportError:
             pass
-    for name in ("GEMINI_API_KEY", "GEMINI_MODEL", "PORT", "SUPABASE_URL", "SUPABASE_PUBLISHABLE_KEY", "SUPABASE_ANON_KEY"):
+    for name in ("GEMINI_API_KEY", "GEMINI_MODEL", "PORT"):
         if name in os.environ:
             values[name] = os.environ[name]
     return values
@@ -233,27 +210,15 @@ def create_server(directory, port=3000, settings=None):
     settings = settings if settings is not None else local_settings(directory)
     api_key = str(settings.get("GEMINI_API_KEY", "")).strip()
     model = str(settings.get("GEMINI_MODEL", DEFAULT_MODEL)).strip() or DEFAULT_MODEL
-    auth = AuthService(directory, settings)
     public_files = {"/": ("index.html", "text/html; charset=utf-8"), "/index.html": ("index.html", "text/html; charset=utf-8"), "/script.js": ("script.js", "application/javascript; charset=utf-8"), "/style.css": ("style.css", "text/css; charset=utf-8")}
 
     class Handler(BaseHTTPRequestHandler):
-        def ticket(self):
-            cookie = SimpleCookie()
-            try:
-                cookie.load(self.headers.get("Cookie", ""))
-                return cookie["electricity_session"].value if "electricity_session" in cookie else ""
-            except Exception:
-                return ""
-
-        def reply(self, status, value, ticket=None):
+        def reply(self, status, value):
             body = json.dumps(value, ensure_ascii=False).encode("utf-8")
             self.send_response(status)
             self.send_header("Content-Type", "application/json; charset=utf-8")
             self.send_header("Content-Length", str(len(body)))
             self.send_header("Cache-Control", "no-store")
-            self.send_header("X-Content-Type-Options", "nosniff")
-            if ticket is not None:
-                self.send_header("Set-Cookie", f"electricity_session={ticket}; HttpOnly; SameSite=Strict; Path=/; Max-Age={43200 if ticket else 0}")
             self.end_headers()
             try:
                 self.wfile.write(body)
@@ -263,7 +228,7 @@ def create_server(directory, port=3000, settings=None):
         def do_GET(self):
             route = urlsplit(self.path).path
             if route == "/api/config":
-                return self.reply(200, {**public_config(api_key), "runtime": "python", "auth": auth.config(self.ticket())})
+                return self.reply(200, {**public_config(api_key), "runtime": "python"})
             if route not in public_files:
                 return self.reply(404, {"error": "Not found"})
             filename, content_type = public_files[route]
@@ -284,9 +249,6 @@ def create_server(directory, port=3000, settings=None):
         def do_POST(self):
             if urlsplit(self.path).path != "/api/ai":
                 return self.reply(404, {"error": "Not found"})
-            origin = self.headers.get("Origin")
-            if origin and origin != "http://" + self.headers.get("Host", ""):
-                return self.reply(403, {"error": "แหล่งคำขอไม่ถูกต้อง"})
             if not self.headers.get("Content-Type", "").startswith("application/json"):
                 return self.reply(415, {"error": "กรุณาส่งข้อมูลแบบ JSON"})
             try:
@@ -300,17 +262,8 @@ def create_server(directory, port=3000, settings=None):
             except (ValueError, UnicodeDecodeError):
                 return self.reply(400, {"error": "ข้อมูล JSON ไม่ถูกต้อง"})
             try:
-                if not isinstance(payload, dict):
-                    raise AuthError("รูปแบบคำขอไม่ถูกต้อง", "invalid_request")
-                ticket = self.ticket()
-                if str(payload.get("action", "")).startswith("auth."):
-                    result, new_ticket = auth.handle(payload, ticket, client=self.client_address[0])
-                    self.reply(200, result, new_ticket)
-                else:
-                    auth.require_user(ticket)
-                    self.reply(200, {"text": generate(payload, api_key=api_key, model=model)})
-            except AuthError as exc:
-                self.reply(exc.status, {"error": str(exc), "code": exc.code})
+                text = generate(payload, api_key=api_key, model=model)
+                self.reply(200, {"text": text})
             except GeminiError as exc:
                 status = 429 if exc.code == "rate_limited" else 400 if exc.code in ("invalid_request", "image_rejected") else 503 if exc.code == "not_configured" else 502
                 self.reply(status, {"error": str(exc), "code": exc.code})
