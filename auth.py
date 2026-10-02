@@ -12,6 +12,7 @@ from pathlib import Path
 from urllib.parse import urlsplit
 
 import requests
+from firebase_auth import FirebaseAuth, FirebaseAuthError
 
 ITERATIONS = 600_000
 SESSION_SECONDS = 12 * 60 * 60
@@ -29,9 +30,12 @@ class AuthService:
         self.url = str(settings.get("SUPABASE_URL", "")).strip().rstrip("/")
         self.key = str(settings.get("SUPABASE_PUBLISHABLE_KEY", "") or settings.get("SUPABASE_ANON_KEY", "")).strip()
         self.http = request or requests.request
+        self.firebase = FirebaseAuth(settings.get("FIREBASE_API_KEY", ""), request=self.http)
         self.lock = threading.RLock()
         self.sessions, self.attempts = {}, {}
         self.mode = "supabase" if self.url and self.key else "unconfigured" if cloud or self.url or self.key else "sqlite"
+        if self.firebase.api_key:
+            self.mode = "firebase"
         if self.mode == "supabase" and (urlsplit(self.url).scheme != "https" or not urlsplit(self.url).hostname):
             self.mode = "unconfigured"
         self.db = Path(directory) / "accounts.db"
@@ -49,7 +53,27 @@ class AuthService:
     def config(self, ticket=""):
         return {"enabled": self.mode != "unconfigured", "provider": self.mode,
                 "user": self.user(ticket), "message": "" if self.mode != "unconfigured" else
-                "กรุณาตั้งค่า SUPABASE_URL และ SUPABASE_PUBLISHABLE_KEY ใน Secrets ก่อนใช้งานบัญชี"}
+                "กรุณาตั้งค่า FIREBASE_API_KEY ใน Secrets ก่อนใช้งานบัญชี"}
+
+    def firebase_call(self, method, *args):
+        try:
+            return getattr(self.firebase, method)(*args)
+        except FirebaseAuthError as exc:
+            raise AuthError(str(exc), exc.code, exc.status) from None
+
+    @staticmethod
+    def firebase_user(value):
+        return {"id": str(value["localId"]), "email": value.get("email", ""),
+                "name": value.get("displayName") or value.get("email", "")}
+
+    @staticmethod
+    def check_firebase_user(value, remote, expected_id=None):
+        try:
+            revoked = int(value.get("validSince", 0)) > remote["auth_time"]
+        except (TypeError, ValueError, KeyError):
+            revoked = True
+        if revoked or (expected_id is not None and value.get("localId") != expected_id):
+            raise AuthError("เซสชันถูกยกเลิก กรุณาเข้าสู่ระบบใหม่", "unauthorized", 401)
 
     def check_config(self):
         if self.mode == "unconfigured":
@@ -62,8 +86,9 @@ class AuthService:
         email = email.strip().lower()
         if len(email) > 254 or not re.fullmatch(r"[^\s@]+@[^\s@]+\.[^\s@]+", email):
             raise AuthError("กรุณากรอกอีเมลให้ถูกต้อง")
-        if not 8 <= len(password) <= 128:
-            raise AuthError("รหัสผ่านต้องมี 8–128 ตัวอักษร")
+        minimum, maximum = (8, 128) if registering else (1, 4096)
+        if not minimum <= len(password) <= maximum:
+            raise AuthError("รหัสผ่านต้องมี 8–128 ตัวอักษร" if registering else "กรุณากรอกรหัสผ่านให้ถูกต้อง")
         name = payload.get("name", "")
         if registering and (not isinstance(name, str) or not 1 <= len(name.strip()) <= 80):
             raise AuthError("กรุณากรอกชื่อที่ใช้แสดง ไม่เกิน 80 ตัวอักษร")
@@ -135,6 +160,21 @@ class AuthService:
             session = self.sessions.get(hashlib.sha256(ticket.encode()).hexdigest())
         if not session or session["expires"] <= time.time():
             return None
+        if self.mode == "firebase" and verify:
+            with session["lock"]:
+                try:
+                    data = session["remote"]
+                    if data["expires_at"] <= time.time() + 30:
+                        refreshed = self.firebase_call("refresh", data["refresh_token"])
+                        data.update(self.firebase_call("token_data", refreshed))
+                    value = self.firebase_call("lookup_user", data["access_token"])
+                    self.check_firebase_user(value, data, session["user"]["id"])
+                    session["user"] = self.firebase_user(value)
+                except AuthError as exc:
+                    if exc.status == 401:
+                        with self.lock:
+                            self.sessions.pop(hashlib.sha256(ticket.encode()).hexdigest(), None)
+                    raise
         if self.mode == "supabase" and verify:
             with session["lock"]:
                 data = session["remote"]
@@ -177,7 +217,13 @@ class AuthService:
         registering = action == "auth.register"
         email, password, name = self.credentials(payload, registering)
         self.throttle(client, email)
-        if self.mode == "supabase":
+        if self.mode == "firebase":
+            value = self.firebase_call("register_user", email, password, name) if registering else self.firebase_call("login_user", email, password)
+            remote = self.firebase_call("token_data", value)
+            account = self.firebase_call("lookup_user", remote["access_token"])
+            self.check_firebase_user(account, remote, value.get("localId"))
+            user = self.firebase_user(account)
+        elif self.mode == "supabase":
             value = self.remote("POST", "signup" if registering else "token?grant_type=password",
                                 {"email": email, "password": password, **({"data": {"name": name}} if registering else {})})
             if registering and not value.get("access_token"):

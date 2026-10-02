@@ -11,6 +11,7 @@ DEFAULT_MODEL = "gemini-3.5-flash-lite"
 MAX_IMAGES = 4
 MAX_IMAGE_BYTES = 3 * 1024 * 1024
 IMAGE_TYPES = ("image/png", "image/jpeg", "image/webp", "image/heic", "image/heif")
+PUBLIC_ASSETS = ("index.html", "script.js", "style.css", "login.html", "login.js", "bridge.js")
 
 
 class GeminiError(Exception):
@@ -108,11 +109,15 @@ import json
 import os
 import re
 import shlex
+import secrets
 import sys
 import tempfile
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlsplit
+from http.cookies import SimpleCookie
+
+from auth import AuthError, AuthService
 
 
 def run_streamlit():
@@ -133,23 +138,33 @@ def run_streamlit():
     api_key = setting("GEMINI_API_KEY")
     model = setting("GEMINI_MODEL", DEFAULT_MODEL) or DEFAULT_MODEL
     @st.cache_resource
-    def public_assets(index_text, script_text, style_text):
-        # Only these three public assets are served by the component.
+    def account_service(firebase_key, url, key):
+        return AuthService(Path(__file__).resolve().parent,
+                           {"FIREBASE_API_KEY": firebase_key, "SUPABASE_URL": url, "SUPABASE_PUBLISHABLE_KEY": key}, cloud=True)
+
+    auth = account_service(setting("FIREBASE_API_KEY"), setting("SUPABASE_URL"), setting("SUPABASE_PUBLISHABLE_KEY") or setting("SUPABASE_ANON_KEY"))
+    if "auth_ticket" not in st.session_state:
+        st.session_state.auth_ticket = ""
+        st.session_state.auth_client = secrets.token_urlsafe(16)
+    @st.cache_resource
+    def public_assets(*texts):
+        # Only these public assets are served by the component.
         # app.py and the Secrets files remain outside the public directory.
         directory = Path(tempfile.mkdtemp(prefix="electricity-component-"))
-        digest = hashlib.sha256((script_text + style_text).encode()).hexdigest()[:12]
-        index_text = re.sub(r'src="script\.js(?:\?[^"]*)?"', f'src="script.js?v={digest}"', index_text)
-        index_text = re.sub(r'href="style\.css(?:\?[^"]*)?"', f'href="style.css?v={digest}"', index_text)
-        for name, text in [("index.html", index_text), ("script.js", script_text), ("style.css", style_text)]:
+        digest = hashlib.sha256("".join(texts).encode()).hexdigest()[:12]
+        for name, text in zip(PUBLIC_ASSETS, texts):
+            if name.endswith(".html"):
+                text = re.sub(r'(src|href)="(script\.js|login\.js|bridge\.js|style\.css)(?:\?[^"]*)?"',
+                              lambda match: f'{match[1]}="{match[2]}?v={digest}"', text)
             (directory / name).write_text(text, encoding="utf-8")
         return str(directory)
 
 
     source = Path(__file__).resolve().parent
     try:
-        assets = public_assets(*((source / name).read_text(encoding="utf-8") for name in ("index.html", "script.js", "style.css")))
+        assets = public_assets(*((source / name).read_text(encoding="utf-8") for name in PUBLIC_ASSETS))
     except OSError:
-        st.error("กรุณาวาง index.html, script.js และ style.css ไว้ในโฟลเดอร์เดียวกับ app.py")
+        st.error("กรุณาวาง index.html, login.html, script.js, login.js, bridge.js และ style.css ไว้ข้าง app.py")
         st.stop()
     frontend = components.declare_component("electricity_frontend", path=assets)
 
@@ -158,7 +173,7 @@ def run_streamlit():
         st.session_state.gemini_last_request = None
 
     request = frontend(
-        config=public_config(api_key),
+        config={**public_config(api_key), "auth": auth.config(st.session_state.auth_ticket)},
         response=st.session_state.gemini_response,
         key="electricity-ui",
         default=None,
@@ -170,8 +185,18 @@ def run_streamlit():
             # Mark before calling Gemini: Streamlit reruns must not bill for the same request twice.
             st.session_state.gemini_last_request = request_id
             try:
-                text = generate(request.get("payload"), api_key=api_key, model=model)
-                answer = {"id": request_id, "ok": True, "text": text}
+                payload = request.get("payload")
+                if not isinstance(payload, dict):
+                    raise AuthError("รูปแบบคำขอไม่ถูกต้อง", "invalid_request")
+                if str(payload.get("action", "")).startswith("auth."):
+                    result, ticket = auth.handle(payload, st.session_state.auth_ticket, client=st.session_state.auth_client)
+                    st.session_state.auth_ticket = ticket
+                else:
+                    auth.require_user(st.session_state.auth_ticket)
+                    result = {"text": generate(payload, api_key=api_key, model=model)}
+                answer = {"id": request_id, "ok": True, "result": result}
+            except AuthError as exc:
+                answer = {"id": request_id, "ok": False, "error": str(exc), "code": exc.code}
             except GeminiError as exc:
                 answer = {"id": request_id, "ok": False, "error": str(exc), "code": exc.code}
             except Exception:
@@ -187,7 +212,7 @@ def local_settings(directory):
     if env_file.exists():
         for line in env_file.read_text(encoding="utf-8-sig").splitlines():
             key, separator, value = line.strip().removeprefix("export ").partition("=")
-            if separator and key.strip() in ("GEMINI_API_KEY", "GEMINI_MODEL", "PORT"):
+            if separator and key.strip() in ("GEMINI_API_KEY", "GEMINI_MODEL", "PORT", "FIREBASE_API_KEY", "SUPABASE_URL", "SUPABASE_PUBLISHABLE_KEY", "SUPABASE_ANON_KEY"):
                 try:
                     values[key.strip()] = " ".join(shlex.split(value, comments=True))
                 except ValueError:
@@ -199,7 +224,7 @@ def local_settings(directory):
             values.update(tomllib.loads(secrets_file.read_text(encoding="utf-8")))
         except ImportError:
             pass
-    for name in ("GEMINI_API_KEY", "GEMINI_MODEL", "PORT"):
+    for name in ("GEMINI_API_KEY", "GEMINI_MODEL", "PORT", "FIREBASE_API_KEY", "SUPABASE_URL", "SUPABASE_PUBLISHABLE_KEY", "SUPABASE_ANON_KEY"):
         if name in os.environ:
             values[name] = os.environ[name]
     return values
@@ -210,15 +235,29 @@ def create_server(directory, port=3000, settings=None):
     settings = settings if settings is not None else local_settings(directory)
     api_key = str(settings.get("GEMINI_API_KEY", "")).strip()
     model = str(settings.get("GEMINI_MODEL", DEFAULT_MODEL)).strip() or DEFAULT_MODEL
-    public_files = {"/": ("index.html", "text/html; charset=utf-8"), "/index.html": ("index.html", "text/html; charset=utf-8"), "/script.js": ("script.js", "application/javascript; charset=utf-8"), "/style.css": ("style.css", "text/css; charset=utf-8")}
+    auth = AuthService(directory, settings)
+    public_files = {"/": ("index.html", "text/html; charset=utf-8"), **{
+        "/" + name: (name, ("text/html" if name.endswith(".html") else "text/css" if name.endswith(".css") else "application/javascript") + "; charset=utf-8")
+        for name in PUBLIC_ASSETS}}
 
     class Handler(BaseHTTPRequestHandler):
-        def reply(self, status, value):
+        def ticket(self):
+            cookie = SimpleCookie()
+            try:
+                cookie.load(self.headers.get("Cookie", ""))
+                return cookie["electricity_session"].value if "electricity_session" in cookie else ""
+            except Exception:
+                return ""
+
+        def reply(self, status, value, ticket=None):
             body = json.dumps(value, ensure_ascii=False).encode("utf-8")
             self.send_response(status)
             self.send_header("Content-Type", "application/json; charset=utf-8")
             self.send_header("Content-Length", str(len(body)))
             self.send_header("Cache-Control", "no-store")
+            self.send_header("X-Content-Type-Options", "nosniff")
+            if ticket is not None:
+                self.send_header("Set-Cookie", f"electricity_session={ticket}; HttpOnly; SameSite=Strict; Path=/; Max-Age={43200 if ticket else 0}")
             self.end_headers()
             try:
                 self.wfile.write(body)
@@ -228,7 +267,7 @@ def create_server(directory, port=3000, settings=None):
         def do_GET(self):
             route = urlsplit(self.path).path
             if route == "/api/config":
-                return self.reply(200, {**public_config(api_key), "runtime": "python"})
+                return self.reply(200, {**public_config(api_key), "runtime": "python", "auth": auth.config(self.ticket())})
             if route not in public_files:
                 return self.reply(404, {"error": "Not found"})
             filename, content_type = public_files[route]
@@ -249,6 +288,9 @@ def create_server(directory, port=3000, settings=None):
         def do_POST(self):
             if urlsplit(self.path).path != "/api/ai":
                 return self.reply(404, {"error": "Not found"})
+            origin = self.headers.get("Origin")
+            if origin and origin != "http://" + self.headers.get("Host", ""):
+                return self.reply(403, {"error": "แหล่งคำขอไม่ถูกต้อง"})
             if not self.headers.get("Content-Type", "").startswith("application/json"):
                 return self.reply(415, {"error": "กรุณาส่งข้อมูลแบบ JSON"})
             try:
@@ -262,8 +304,17 @@ def create_server(directory, port=3000, settings=None):
             except (ValueError, UnicodeDecodeError):
                 return self.reply(400, {"error": "ข้อมูล JSON ไม่ถูกต้อง"})
             try:
-                text = generate(payload, api_key=api_key, model=model)
-                self.reply(200, {"text": text})
+                if not isinstance(payload, dict):
+                    raise AuthError("รูปแบบคำขอไม่ถูกต้อง", "invalid_request")
+                ticket = self.ticket()
+                if str(payload.get("action", "")).startswith("auth."):
+                    result, new_ticket = auth.handle(payload, ticket, client=self.client_address[0])
+                    self.reply(200, result, new_ticket)
+                else:
+                    auth.require_user(ticket)
+                    self.reply(200, {"text": generate(payload, api_key=api_key, model=model)})
+            except AuthError as exc:
+                self.reply(exc.status, {"error": str(exc), "code": exc.code})
             except GeminiError as exc:
                 status = 429 if exc.code == "rate_limited" else 400 if exc.code in ("invalid_request", "image_rejected") else 503 if exc.code == "not_configured" else 502
                 self.reply(status, {"error": str(exc), "code": exc.code})

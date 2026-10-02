@@ -1,100 +1,27 @@
-/* Streamlit Components v1 JSON protocol. No API key enters this file.
-   Reference: https://docs.streamlit.io/develop/concepts/custom-components/components-v1/intro */
-(() => {
-  // Direct Python server: HTTP endpoints. Streamlit iframe: component messages.
-  if (window.parent === window || !/\/component\//.test(window.location.pathname)) {
-    const ready = fetch('/api/config').then(async response => {
-      if (!response.ok) throw new Error('กรุณาเปิดเว็บผ่านเซิร์ฟเวอร์ Python');
-      return response.json();
-    });
-    window.StreamlitBridge = {
-      ready,
-      async request(payload, signal) {
-        const response = await fetch('/api/ai', {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload), signal
-        });
-        const result = await response.json();
-        if (!response.ok) { const error = new Error(result.error || 'Gemini API error'); error.code = result.code; throw error; }
-        return result;
-      }
-    };
-    return;
-  }
-  let config = null, active = null, counter = 0, readyResolve;
-  const ready = new Promise(resolve => { readyResolve = resolve; });
-  const queue = [];
-  let lastHeight = 0, resizeFrame = null;
-  const send = (type, fields) => window.parent.postMessage({ isStreamlitMessage: true, type, ...fields }, '*');
-  function resize() {
-    if (resizeFrame !== null) return;
-    resizeFrame = requestAnimationFrame(() => {
-      resizeFrame = null;
-      const height = Math.max(300, Math.ceil(document.body.getBoundingClientRect().height) + 12);
-      if (height !== lastHeight) { lastHeight = height; send('streamlit:setFrameHeight', { height }); }
-    });
-  }
-  function cleanup(item) {
-    clearTimeout(item.timer);
-    item.signal?.removeEventListener('abort', item.abort);
-  }
-  function dispatch() {
-    if (active || !config) return;
-    while (queue.length) {
-      const item = queue.shift();
-      if (item.cancelled) continue;
-      active = item;
-      item.timer = setTimeout(() => {
-        cleanup(item); item.cancelled = true;
-        item.reject(new Error('Gemini ใช้เวลานานเกินไป กรุณารีเฟรชหน้าเว็บแล้วลองใหม่'));
-        // Keep the request slot until Python acknowledges it, preventing duplicate submissions.
-      }, 150000);
-      send('streamlit:setComponentValue', { value: { id: item.id, payload: item.payload }, dataType: 'json' });
-      return;
-    }
-  }
-  window.addEventListener('message', event => {
-    if (event.source !== window.parent || event.data?.type !== 'streamlit:render') return;
-    const args = event.data.args || {};
-    if (args.config) { config = args.config; readyResolve(config); }
-    const response = args.response;
-    if (active && response?.id === active.id) {
-      const item = active; active = null; cleanup(item);
-      if (!item.cancelled) {
-        if (response.ok) item.resolve({ text: response.text });
-        else { const error = new Error(response.error || 'Gemini API error'); error.code = response.code; item.reject(error); }
-      }
-    }
-    dispatch(); resize();
-  });
-  window.StreamlitBridge = {
-    ready,
-    request(payload, signal) {
-      return new Promise((resolve, reject) => {
-        if (signal?.aborted) return reject(new DOMException('Aborted', 'AbortError'));
-        if (queue.length >= 8) return reject(new Error('มีคำขอรออยู่หลายรายการ กรุณารอสักครู่'));
-        const item = { id: `${Date.now()}-${++counter}`, payload, signal, resolve, reject, cancelled: false };
-        item.abort = () => {
-          item.cancelled = true; cleanup(item); reject(new DOMException('Aborted', 'AbortError'));
-          // Sent calls may still finish on Python; ignore their response after Stop.
-          if (active !== item) dispatch();
-        };
-        signal?.addEventListener('abort', item.abort, { once: true });
-        queue.push(item); dispatch();
-      });
-    }
-  };
-  new ResizeObserver(resize).observe(document.body);
-  window.addEventListener('load', resize);
-  send('streamlit:componentReady', { apiVersion: 1 });
-  resize();
-})();
-
 // Support the original index.html, including its two elements named chips.
 const originalChips = document.querySelectorAll('[id="chips"]');
 if (!document.getElementById('chatChips') && originalChips.length > 1) originalChips[1].id = 'chatChips';
 
 const $=id=>document.getElementById(id);
+let accountUser = null, accountBusy = false;
+function initAccount(config) {
+  accountUser = config?.user || null;
+  if (!accountUser) { window.ElectricityPages.open('login.html'); return; }
+  $('appShell').hidden = false;
+  $('accountName').textContent = accountUser.name || accountUser.email || '';
+  go(0);
+}
+$('logoutButton').onclick = async () => {
+  if (accountBusy) return;
+  accountBusy = true; $('logoutButton').disabled = true;
+  ctl?.abort();
+  try {
+    await window.StreamlitBridge.request({ action: 'auth.logout' });
+    accountUser = null; $('appShell').hidden = true;
+    window.ElectricityPages.open('login.html');
+  } catch (error) { $('logoutButton').textContent = error.message; }
+  finally { accountBusy = false; $('logoutButton').disabled = false; }
+};
 const EN={n1:"📷 AI Assistant",n2:"📊 Dashboard",n3:"🔌 Appliances",set:"Settings",lang:"Language",cur:"Currency",s1:"1) Upload electricity bill photos (any language)",read:"Let AI read the bills",hint:"Hide your name and address before uploading · or enter data manually below",s2:"2) Monthly data (editable)",add:"+ Add row",demo:"Sample data",go:"Open dashboard →",pm:"Month",pa:"Amount",none:"No data yet",del:"Delete",s3:"3) Ask the AI assistant",pq:"Type your question",send:"Send",stop:"Stop",note:"Numbers are computed by code and the AI only explains them · savings are estimates",c1:"Why are some months more expensive?",c2:"Help me plan how to cut my bill",c3:"Which appliances probably use the most power?",k1:"Average / month",k2:"Highest",k3:"Latest vs previous month",k4:"Forecast next month",ksub:"from {0} months",ct:"Actual bills + 3-month forecast",cn:"Linear trend from your own data; seasonality is not modelled (needs 12+ months) · dashed line = your average",need:"Enter at least 3 months on the first page to see charts and forecasts",st2:"🤖 AI summary",sb:"Summarize with AI",at:"Don't know your daily usage? Estimate it from appliances",an:"Enter power (watts, see the label), hours per day and number of units. Defaults are rough averages - adjust them to your home.",aa:"+ Add appliance",pr:"Price per kWh",pn:"Name",u1:"W",u2:"h/day",u3:"units",e0:"Per day",e1:"Per month",e2:"vs your bills (avg {0} kWh)",lo:"Estimate is lower than your bills - some appliances may be missing",hi:"Estimate is higher than your bills - try fewer hours",ok:"Close to your bills",sh:"Share by appliance",cn2:"watts × hours × units × 30 days · estimate only; cycling appliances (fridge, A/C) use less than rated power",it:"🤖 AI insights & saving tips",ib:"Analyze & suggest savings",ts:"saves ~{0} kWh/month{1}",tot:"If you apply all: ~{0} kWh/month{1} (estimate)",apl:"Apply to table",done:"Applied",o1:"Open this app through Python or Streamlit to use Gemini AI",o2:"Image reading is not available here - please enter data manually",r0:"Please choose bill photos first",r1:"Max {0} images at a time",r2:"AI is reading... (may take a moment)",r3:"Read {0} bills - please check the numbers",e_1:"You did not allow AI use",e_2:"Too many requests, try again later",e_3:"Image not usable, try another",e_4:"AI answered in an unreadable format, try a clearer photo",e_5:"Something went wrong, please try again",th:"Thinking...",tr:"Translating the interface...",tf:"Translation failed - showing English",a1:"A/C",a2:"Fridge",a3:"Fan",a4:"TV",a5:"Lights",a6:"Laptop",need2:"Enter at least 3 months first"};
 const TH={n1:"📷 ผู้ช่วย AI",n2:"📊 แดชบอร์ด",n3:"🔌 เครื่องใช้ไฟฟ้า",set:"ตั้งค่า",lang:"ภาษา",cur:"สกุลเงิน",s1:"1) อัปโหลดรูปบิลค่าไฟ (ภาษาไหนก็ได้)",read:"ให้ AI อ่านบิล",hint:"ควรปิดชื่อและที่อยู่ก่อนอัปโหลด · หรือกรอกเองด้านล่างก็ได้",s2:"2) ข้อมูลรายเดือน (แก้ไขได้)",add:"+ เพิ่มเอง",demo:"ตัวอย่างข้อมูล",go:"ดูแดชบอร์ด →",pm:"เดือน",pa:"ยอดเงิน",none:"ยังไม่มีข้อมูล",del:"ลบ",s3:"3) ถามผู้ช่วย AI",pq:"พิมพ์คำถามได้เลย",send:"ส่ง",stop:"หยุด",note:"ตัวเลขคำนวณโดยโค้ด AI เป็นผู้เรียบเรียงเท่านั้น · ตัวเลขการประหยัดเป็นค่าประมาณ",c1:"ทำไมบางเดือนบิลแพงกว่าเดือนอื่น",c2:"ช่วยวางแผนลดค่าไฟให้หน่อย",c3:"เครื่องใช้ไฟฟ้าอะไรน่าจะกินไฟมากสุด",k1:"เฉลี่ย/เดือน",k2:"สูงสุด",k3:"เดือนล่าสุดเทียบเดือนก่อน",k4:"พยากรณ์เดือนหน้า",ksub:"จาก {0} เดือน",ct:"ค่าไฟจริง + พยากรณ์ 3 เดือนถัดไป",cn:"แนวโน้มเชิงเส้นจากข้อมูลของคุณเอง ยังไม่จับฤดูกาล (ต้องมี 12 เดือนขึ้นไป) · เส้นประ = ค่าเฉลี่ยของคุณ",need:"กรอกข้อมูลอย่างน้อย 3 เดือนในหน้าแรก จึงจะแสดงกราฟและพยากรณ์ได้",st2:"🤖 AI สรุปภาพรวม",sb:"ให้ AI สรุปให้",at:"ไม่รู้ว่าใช้ไฟวันละเท่าไร? ประมาณจากเครื่องใช้ไฟฟ้า",an:"ใส่กำลังไฟ (วัตต์ ดูจากป้ายเครื่อง) ชั่วโมงที่ใช้ต่อวัน และจำนวนเครื่อง ค่าเริ่มต้นเป็นค่าเฉลี่ยคร่าว ๆ ปรับให้ตรงกับบ้านคุณ",aa:"+ เพิ่มเครื่องใช้",pr:"ราคาต่อ kWh",pn:"ชื่อ",u1:"วัตต์",u2:"ชม./วัน",u3:"เครื่อง",e0:"ต่อวัน",e1:"ต่อเดือน",e2:"เทียบบิลจริง (เฉลี่ย {0} kWh)",lo:"ประมาณการต่ำกว่าบิล อาจมีเครื่องที่ยังไม่ได้ใส่",hi:"ประมาณการสูงกว่าบิล ลองลดชั่วโมงใช้งาน",ok:"ใกล้เคียงบิลจริง",sh:"สัดส่วนแต่ละเครื่อง",cn2:"วัตต์ × ชั่วโมง × จำนวน × 30 วัน · เป็นค่าประมาณ เครื่องที่ทำงานเป็นรอบ (ตู้เย็น แอร์) กินไฟจริงน้อยกว่ากำลังที่ระบุบนป้าย",it:"🤖 AI วิเคราะห์และแนะนำการประหยัดไฟ",ib:"วิเคราะห์และแนะนำวิธีประหยัด",ts:"ประหยัดได้ ~{0} kWh/เดือน{1}",tot:"ถ้าทำครบทุกข้อ: ~{0} kWh/เดือน{1} (ค่าประมาณ)",apl:"ใช้ค่านี้ในตาราง",done:"ใช้แล้ว",o1:"เปิดเว็บผ่าน Python หรือ Streamlit เพื่อใช้งาน Gemini AI",o2:"ที่นี่ยังอ่านรูปไม่ได้ กรุณากรอกข้อมูลเอง",r0:"กรุณาเลือกรูปบิลก่อน",r1:"ส่งได้ครั้งละ {0} รูป",r2:"AI กำลังอ่านบิล... (อาจใช้เวลาสักครู่)",r3:"อ่านได้ {0} บิล กรุณาตรวจสอบตัวเลข",e_1:"คุณไม่ได้อนุญาตให้ใช้ AI",e_2:"ใช้งานถี่เกินไป ลองใหม่ภายหลัง",e_3:"ไฟล์รูปใช้ไม่ได้ ลองรูปอื่น",e_4:"AI ตอบในรูปแบบที่อ่านไม่ได้ ลองรูปที่ชัดขึ้น",e_5:"เกิดข้อผิดพลาด ลองใหม่อีกครั้ง",th:"กำลังคิด...",tr:"กำลังแปลหน้าจอ...",tf:"แปลไม่สำเร็จ แสดงเป็นอังกฤษ",a1:"แอร์",a2:"ตู้เย็น",a3:"พัดลม",a4:"ทีวี",a5:"หลอดไฟ",a6:"โน้ตบุ๊ก",need2:"กรอกอย่างน้อย 3 เดือนก่อน"};
 Object.assign(EN,{pt:"Usage pattern & forecast model",peak:"Highest month",low:"Lowest month",spr:"High vs low gap",upk:"Avg cost per kWh",md:"Forecast model",mch:"Month-by-month change",m_lin:"Linear regression",m_holt:"Exponential smoothing",m_ma:"Moving average (3 months)",bt:"Monthly budget check",bh:"Set a budget to see if the next 3 months go over",bp:"e.g. 2000",bok:"Within budget",bov:"Over by {0}",cn:"Model chosen automatically by back-testing on your own data (linear, exponential smoothing or moving average); needs 12+ months to capture seasons · dashed line = your average"});
@@ -159,10 +86,18 @@ function imageData(file, signal) {
   });
 }
 async function geminiRequest(input, options = {}, json = false) {
+  if (!accountUser) throw new Error('กรุณาเข้าสู่ระบบก่อนใช้งาน');
+  const accountId = accountUser.id;
   const images = await Promise.all((options.images || []).map(file => imageData(file, options.signal)));
   if (images.length > caps.images.maxCount) throw new Error(t('r1', caps.images.maxCount));
   const body = { images, json, ...(Array.isArray(input) ? { messages: input } : { prompt: input }) };
-  const result = await window.StreamlitBridge.request(body, options.signal);
+  let result;
+  try { result = await window.StreamlitBridge.request(body, options.signal); }
+  catch (error) {
+    if (error.code === 'unauthorized') { accountUser = null; $('appShell').hidden = true; window.ElectricityPages.open('login.html'); }
+    throw error;
+  }
+  if (accountUser?.id !== accountId) throw new DOMException('Aborted', 'AbortError');
   if (typeof result.text !== 'string') throw new Error('ไม่มีข้อความตอบกลับจาก Gemini');
   options.onText?.({ text: result.text });
   if (!json) return { text: result.text };
@@ -176,8 +111,9 @@ caps = { images: { maxCount: 4, maxBytes: 3 * 1024 * 1024, mimeTypes: ['image/pn
   try {
     const config = await window.StreamlitBridge.ready;
     caps.images = config.images;
+    initAccount(config.auth);
     if (!config.configured) $('st').textContent = config.runtime === 'python' ? 'กรุณาใส่ GEMINI_API_KEY ในไฟล์ .env แล้วรัน Python ใหม่' : 'กรุณาตั้งค่า GEMINI_API_KEY ใน Secrets ของ Streamlit';
-  } catch (e) { $('st').textContent = e.message; }
+  } catch (e) { $('st').textContent = e.message; $('appError').hidden = false; $('appError').textContent = e.message; }
 })();
 function rows(){$('rows').innerHTML=bills.map((b,i)=>`<div class="row"><input class="n" value="${b.m||''}" placeholder="${t('pm')}" oninput="bills[${i}].m=this.value"><input type="number" value="${b.amt??''}" placeholder="${t('pa')}" oninput="bills[${i}].amt=this.value===''?null:+this.value"><input type="number" value="${b.kwh??''}" placeholder="kWh" oninput="bills[${i}].kwh=this.value===''?null:+this.value"><button class="g" onclick="bills.splice(${i},1);rows()">${t('del')}</button></div>`).join('')||`<div class="note">${t('none')}</div>`}
 function addRow(){bills.push({m:'',amt:null,kwh:null});rows()}

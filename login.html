@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>เข้าสู่ระบบ — Electricity AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="style.css"></head><body>
+<section id="authPage" class="auth-page" aria-labelledby="authTitle">
+  <div class="card auth-card">
+    <div class="auth-brand">⚡ Electricity AI</div>
+    <h1 id="authTitle">เข้าสู่ระบบ</h1>
+    <p class="note" id="authIntro">ใช้บัญชีเดิมกลับมาวิเคราะห์ค่าไฟได้ทุกครั้ง</p>
+    <div class="auth-tabs" role="group" aria-label="เลือกเข้าสู่ระบบหรือสมัครสมาชิก">
+      <button type="button" id="loginTab" aria-pressed="true">เข้าสู่ระบบ</button>
+      <button type="button" id="registerTab" class="g" aria-pressed="false">สมัครสมาชิก</button>
+    </div>
+    <form id="authForm">
+      <div id="nameField" hidden><label for="authName">ชื่อที่ใช้แสดง</label><input id="authName" maxlength="80" autocomplete="nickname"></div>
+      <label for="authEmail">อีเมล</label><input id="authEmail" type="email" required maxlength="254" autocomplete="username" placeholder="you@example.com">
+      <label for="authPassword">รหัสผ่าน</label><input id="authPassword" type="password" required minlength="1" maxlength="4096" autocomplete="current-password" placeholder="รหัสผ่านของคุณ">
+      <div id="confirmField" hidden><label for="authConfirm">ยืนยันรหัสผ่าน</label><input id="authConfirm" type="password" minlength="8" maxlength="128" autocomplete="new-password"></div>
+      <button type="submit" id="authSubmit" disabled>เข้าสู่ระบบ</button>
+    </form>
+    <p id="authMessage" class="auth-message" role="status" aria-live="polite">กำลังเชื่อมต่อ...</p>
+  </div>
+</section>
+<script src="bridge.js"></script><script src="login.js"></script></body></html>

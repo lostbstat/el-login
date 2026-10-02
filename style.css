@@ -72,3 +72,19 @@ details.card>summary{cursor:pointer;font-size:15px}
 @media (min-width:760px){.hw{grid-template-columns:minmax(0,1fr) 220px;grid-template-areas:"c c" "s m"}}
 @media (min-width:1100px){.hw{grid-template-columns:230px minmax(0,1fr) 230px;grid-template-areas:"m s c"}.hw>.stats{grid-template-columns:1fr}}
 body{max-width:1360px}nav,#thm,section:not(#p0),#dtl,#hub{max-width:860px;margin-left:auto;margin-right:auto}
+/* Account screens share the existing page theme. */
+.auth-page { min-height: 85vh; display: grid; place-items: center; padding: 24px 12px; }
+.auth-page[hidden], #appShell[hidden] { display: none !important; }
+.auth-card { width: 100%; max-width: 430px; padding: 32px; box-sizing: border-box; }
+.auth-brand { color: var(--prt); font-weight: 700; font-size: 20px; margin-bottom: 20px; }
+.auth-card h1 { font-size: 26px; margin: 0 0 8px; }
+.auth-tabs { display: flex; gap: 10px; margin: 22px 0; }
+.auth-tabs button { flex: 1; }
+.auth-card label { display: block; margin: 15px 0 7px; font-size: 14px; }
+.auth-card input { width: 100%; box-sizing: border-box; }
+.auth-card button[type="submit"] { width: 100%; margin-top: 24px; }
+.auth-message { min-height: 24px; color: var(--mu); font-size: 13px; line-height: 1.7; }
+.account-bar { display: flex; align-items: center; gap: 12px; padding: 8px 4px 18px; font-size: 14px; }
+.account-bar > span:first-child { font-weight: 700; margin-right: auto; }
+.account-bar #accountName { overflow-wrap: anywhere; }
+@media (max-width: 480px) { .auth-card { padding: 24px 20px; } .account-bar { flex-wrap: wrap; } }
