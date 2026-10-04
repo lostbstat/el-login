@@ -123,7 +123,7 @@ from auth import AuthError, AuthService, SESSION_SECONDS
 def run_streamlit():
     import streamlit as st
     import streamlit.components.v1 as components
-    st.set_page_config(page_title="Electricity AI Assistant", page_icon="⚡", layout="wide", initial_sidebar_state="collapsed")
+    st.set_page_config(page_title="Komi", page_icon="⚡", layout="wide", initial_sidebar_state="collapsed")
 
 
     def setting(name, default=""):
