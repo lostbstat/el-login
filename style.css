@@ -3891,7 +3891,7 @@ input[type=file]::file-selector-button{
   border-radius:14px 20px 13px 18px!important;
   box-shadow:4px 6px 0 rgba(67,48,46,.10)!important;
 }
-.pattern-head,.pattern-history-linked .pattern-row:nth-child(even),.chart-info{background:#F1EDE2}
+.chart-info{background:#F1EDE2}
 .pattern-history-linked .pattern-row:hover{background:#FFF7D5}
 .pattern-history-linked .pattern-row.selected{background:#F2D6DE}
 .pattern-track{background:#E8DFD4}
@@ -4930,5 +4930,48 @@ html.streamlit-embed .side .side-foot {
 }
 .shd {
   background: var(--reading-surface);
+  color: var(--reading-text);
+}
+
+/* =========================================================
+   MONTHLY CHANGE — Pink header and matching monthly rows
+   Edit these colors to change only this table.
+========================================================= */
+.monthly-change-card {
+  --month-heading-bg: #F2D6DE;
+  --month-heading-border: #E1AEBC;
+  --month-row-bg: #FAF7EA;
+  --month-row-alt-bg: #F8E8EC;
+  --month-row-hover-bg: #FFF7D5;
+  --month-row-selected-bg: #F2D6DE;
+}
+:root[data-theme="dark"] .monthly-change-card {
+  --month-heading-bg: #422D35;
+  --month-heading-border: #806666;
+  --month-row-bg: #302829;
+  --month-row-alt-bg: #352D2C;
+  --month-row-hover-bg: #3C3529;
+  --month-row-selected-bg: #422D35;
+}
+#appShell #p2 .monthly-change-card .pattern-head {
+  background: var(--month-heading-bg);
+  color: var(--reading-text);
+  border: 1px solid var(--month-heading-border);
+  font-weight: 700;
+}
+#appShell #p2 .monthly-change-card .pattern-row {
+  background: var(--month-row-bg);
+}
+#appShell #p2 .monthly-change-card .pattern-row:nth-child(even) {
+  background: var(--month-row-alt-bg);
+}
+#appShell #p2 .monthly-change-card .pattern-row:hover {
+  background: var(--month-row-hover-bg);
+}
+#appShell #p2 .monthly-change-card .pattern-row:is(.selected,:focus-visible) {
+  background: var(--month-row-selected-bg);
+  border-color: var(--month-heading-border);
+}
+#appShell #p2 .monthly-change-card .pattern-row.selected :is(.pattern-month,.pattern-amount) {
   color: var(--reading-text);
 }
