@@ -11,7 +11,7 @@ DEFAULT_MODEL = "gemini-3.5-flash-lite"
 MAX_IMAGES = 4
 MAX_IMAGE_BYTES = 3 * 1024 * 1024
 IMAGE_TYPES = ("image/png", "image/jpeg", "image/webp", "image/heic", "image/heif")
-PUBLIC_ASSETS = ("index.html", "script.js", "style.css", "login.html", "login.js", "bridge.js")
+PUBLIC_ASSETS = ("index.html", "script.js", "style.css", "login.html", "login.js", "bridge.js", "butterflies.js")
 
 
 class GeminiError(Exception):
@@ -154,7 +154,7 @@ def run_streamlit():
         digest = hashlib.sha256("".join(texts).encode()).hexdigest()[:12]
         for name, text in zip(PUBLIC_ASSETS, texts):
             if name.endswith(".html"):
-                text = re.sub(r'(src|href)="(script\.js|login\.js|bridge\.js|style\.css)(?:\?[^"]*)?"',
+                text = re.sub(r'(src|href)="(script\.js|login\.js|bridge\.js|butterflies\.js|style\.css)(?:\?[^"]*)?"',
                               lambda match: f'{match[1]}="{match[2]}?v={digest}"', text)
             (directory / name).write_text(text, encoding="utf-8")
         return str(directory)
@@ -164,7 +164,7 @@ def run_streamlit():
     try:
         assets = public_assets(*((source / name).read_text(encoding="utf-8") for name in PUBLIC_ASSETS))
     except OSError:
-        st.error("กรุณาวาง index.html, login.html, script.js, login.js, bridge.js และ style.css ไว้ข้าง app.py")
+        st.error("กรุณาวาง index.html, login.html, script.js, login.js, bridge.js, butterflies.js และ style.css ไว้ข้าง app.py")
         st.stop()
     frontend = components.declare_component("electricity_frontend", path=assets)
 
@@ -237,7 +237,7 @@ def create_server(directory, port=3000, settings=None):
     model = str(settings.get("GEMINI_MODEL", DEFAULT_MODEL)).strip() or DEFAULT_MODEL
     auth = AuthService(directory, settings)
     public_files = {"/": ("index.html", "text/html; charset=utf-8"), **{
-        "/" + name: (name, ("text/html" if name.endswith(".html") else "text/css" if name.endswith(".css") else "application/javascript") + "; charset=utf-8")
+        "/" + name: (name, ("text/html" if name.endswith(".html") else "text/css" if name.endswith(".css") else "application/json" if name.endswith(".json") else "application/javascript") + "; charset=utf-8")
         for name in PUBLIC_ASSETS}}
 
     class Handler(BaseHTTPRequestHandler):

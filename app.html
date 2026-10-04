@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Electricity AI Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mali:wght@600;700&family=Noto+Sans+Thai:wght@400;500;600;700;800&family=Sarabun:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="style.css"></head><body>
+<p id="appError" class="auth-message" role="status" hidden></p>
+<div id="appShell" hidden>
+<div class="account-bar"><span>⚡ Electricity AI</span><span id="accountName"></span><button type="button" id="logoutButton" class="g">ออกจากระบบ</button></div>
+<nav><button id="n0" class="on" onclick="go(0)"></button><button id="n1" onclick="go(1)"></button><button id="n2" onclick="go(2)"></button><button id="n3" onclick="go(3)"></button><button id="n4" onclick="go(4)"></button><button id="n5" onclick="go(5)"></button><button id="n6" onclick="go(6)"></button><button id="nt" title="Theme" aria-label="Theme" onclick="$('thm').hidden=!$('thm').hidden">🎨</button></nav>
+<div class="card" id="thm" hidden><h2 data-i="tk"></h2><div class="row"><input type="color" id="pick" value="#F17424" aria-label="color"><div id="sws" class="row" style="margin:0;gap:8px"></div></div><div class="note" data-i="tp"></div><div class="row"><button class="g" data-m="auto" data-i="ta"></button><button class="g" data-m="light" data-i="tl"></button><button class="g" data-m="dark" data-i="td"></button><button class="g" id="trs" data-i="tkr" style="margin-left:auto"></button></div></div>
+
+<section id="p0">
+<div class="hw"><div class="stats" id="chips"></div><div class="card stage"><div class="tb"><h2 data-i="rm_t" style="margin:0"></h2><div class="tools"><button class="g" id="lk" onclick="LOCK=!LOCK;room()"></button><button class="g" onclick="apps=SAMP.map(a=>({...a}));SEL=null;SELF=null;pl()" data-i="rm_s"></button><button class="g" onclick="apps=[];FUR=[];SEL=null;SELF=null;pl()" data-i="rm_c"></button><button class="g" onclick="DEC=!DEC;room()" data-i="rm_d"></button><button class="g" onclick="$('dec').hidden=!$('dec').hidden" data-i="dc_t"></button></div></div>
+<svg id="room" viewBox="0 0 400 260" style="display:block;width:100%;max-width:720px;margin:0 auto;background:transparent;border-radius:18px;touch-action:none;user-select:none"></svg>
+<div id="dec" class="selbar" hidden><span data-i="dc_p"></span><span id="dcp" style="display:flex;gap:4px"></span><span data-i="dc_w"></span><input type="color" id="cl" value="#A5BAE7" oninput="RC.l=this.value;room()"><input type="color" id="cr" value="#F9EEE8" oninput="RC.r=this.value;room()"><span data-i="dc_f"></span><input type="color" id="cf" value="#F3D36A" oninput="RC.f=this.value;room()"><select id="cfs" onchange="RC.fs=this.value;room()"><option value="grid" data-i="dc_g"></option><option value="wood" data-i="dc_wd"></option><option value="tile" data-i="dc_tl"></option></select><select id="cws" onchange="RC.ws=this.value;room()"><option value="" data-i="dc_pl"></option><option value="stripe" data-i="dc_st"></option></select></div>
+<div id="rsel" class="selbar"></div>
+<div class="tabs"><button id="tA" class="tab on" onclick="PT=0;room()" data-i="pt_a"></button><button id="tF" class="tab" onclick="PT=1;room()" data-i="pt_f"></button></div>
+<div class="pal" id="pal"></div></div><div id="mini" class="card lk" tabindex="0" role="button" onclick="go(6)" onkeydown="if(event.key==='Enter')go(6)"></div></div>
+<details class="card" id="dtl"><summary><b data-i="hm_at"></b></summary><div class="note" style="margin:8px 0" data-i="an"></div><div class="note" style="margin:0 0 8px" data-i="pl_an"></div><div class="note" style="margin:0 0 8px" data-i="mdn"></div><div id="pa"></div><select id="psh" hidden></select></details>
+<div id="hub" hidden></div>
+</section>
+<section id="p5" hidden>
+<div class="card"><h2 data-i="set"></h2><div class="row"><span data-i="lang"></span><select id="lang" style="width:auto"></select><span data-i="cur"></span><input id="cur" value="฿" style="width:70px"></div><div id="tst" class="note"></div></div>
+<div class="card"><h2 data-i="hm_s"></h2>
+<div class="row"><span data-i="pl_b"></span><input id="pb" type="number" placeholder="1500" oninput="plan()"><span data-i="pr"></span><input id="price" type="number" step="0.01" value="8" oninput="plan()"></div>
+<div class="row"><span data-i="pl_f"></span><input id="pf" type="number" value="0" oninput="plan()"><span data-i="pl_l"></span><input id="pw" type="number" value="2200" oninput="plan()"></div>
+<div class="note" data-i="pl_lh"></div><div class="note" id="pnote"></div></div>
+</section>
+
+<section id="p1" hidden>
+<div class="card"><h2 data-i="s1"></h2><div class="row"><input type="file" id="f" accept="image/*" multiple style="width:auto;max-width:100%"><button id="rd" onclick="readBills()" data-i="read"></button></div><div id="st" class="note" data-i="hint"></div></div>
+<div class="card"><h2 data-i="s2"></h2><div id="rows"></div><div class="row"><button class="g" onclick="addRow()" data-i="add"></button><button class="g" onclick="demo()" data-i="demo"></button><button onclick="go(2)" style="margin-left:auto" data-i="go"></button></div></div>
+<div class="card"><h2 data-i="s3"></h2><div class="chips" id="chatChips"></div><div id="log"></div>
+<div class="row"><textarea id="q" rows="2" data-p="pq" style="flex:1;min-width:200px"></textarea><button id="sd" onclick="ask()" data-i="send"></button><button class="g" id="sp" onclick="ctl&&ctl.abort()" hidden data-i="stop"></button></div><div class="note" data-i="note"></div></div>
+</section>
+
+<section id="p2" hidden>
+<div id="kpi" class="grid"></div>
+<div class="card"><h2 data-i="ct"></h2><div id="c1"></div><div class="note" data-i="cn"></div></div>
+<div class="card"><h2 data-i="pt"></h2><div id="pat"></div></div>
+<div class="card"><h2 data-i="bt"></h2><div class="row" style="justify-content:space-between"><span class="note" style="margin:0" id="bh2"></span><button class="g" onclick="go(0)" data-i="ed_b"></button></div><div id="bo"></div></div>
+<div class="card ai"><h2 data-i="st2"></h2><div class="row"><button id="sm" onclick="summ()" data-i="sb"></button></div><div class="t" id="sv"></div></div>
+</section>
+
+<section id="p3" hidden>
+<div class="card"><div class="row" style="margin:0;justify-content:space-between"><span class="note" style="margin:0" data-i="ed_n"></span><button class="g" onclick="go(0)" data-i="ed_b"></button></div></div>
+<div id="es"></div>
+<div class="card ai" id="insc" hidden><h2 data-i="it"></h2><div class="row"><button id="ib" onclick="insights()" data-i="ib"></button></div><div class="t" id="iv"></div><div id="tips"></div></div>
+</section>
+
+<section id="p4" hidden>
+<div id="po"></div>
+<div class="card" id="bc"><h2 data-i="bc_t"></h2><div class="note" data-i="bc_n"></div>
+<div class="row"><span data-i="bc_ft"></span><input id="bft" type="number" step="0.01" value="0.95" oninput="plan()"></div>
+<div class="row"><span data-i="bc_u"></span><input id="bu" type="number" oninput="bcc()"><b id="bo1"></b></div>
+<div class="row"><span data-i="bc_a"></span><input id="ba" type="number" oninput="bcc()"><b id="bo2"></b></div></div>
+<div class="card" id="oc"><h2 data-i="oc_t"></h2><div class="note" data-i="oc_n"></div>
+<div class="row"><span data-i="oc_u"></span><input id="ocu" type="number" oninput="occ()"><span data-i="oc_a"></span><input id="oca" type="number" oninput="occ()"><button class="g" onclick="ocl()" data-i="oc_l"></button></div>
+<div class="row"><span data-i="oc_mp"></span><input id="omp" type="number" oninput="occ()"><span data-i="oc_mc"></span><input id="omc" type="number" oninput="occ()"></div>
+<div id="oco"></div><div class="note" data-i="oc_w"></div></div>
+<div class="card ai" id="pai"><div class="row"><button id="pi" onclick="planAI()" data-i="pl_ai"></button></div><div class="note" id="ph"></div><div class="t" id="pv"></div></div>
+</section>
+
+<section id="p6" hidden>
+<div class="card"><h2 data-i="so_t"></h2><div class="note" data-i="so_n"></div>
+<div class="row"><span data-i="so_v"></span><select id="mvis" onchange="ME.vis=this.value;soc()"><option value="all" data-i="so_va"></option><option value="friends" data-i="so_vf"></option><option value="none" data-i="so_vn"></option></select><span data-i="so_pp"></span><input type="number" min="1" value="1" style="width:64px" oninput="ME.pp=Math.max(1,+this.value||1);soc()"></div>
+<div class="row"><label><input type="checkbox" checked style="width:auto" onchange="ME.rk=+this.checked;soc()"> <span data-i="so_rk"></span></label></div>
+<div class="row"><label><input type="checkbox" checked style="width:auto" onchange="ME.det=+this.checked;soc()"> <span data-i="so_det"></span></label></div></div>
+<div class="card"><div class="row" style="justify-content:space-between;margin-top:0"><h2 style="margin:0" data-i="so_rt"></h2><select id="rmet" onchange="soc()"><option value="sv" data-i="so_m1"></option><option value="pp" data-i="so_m2"></option><option value="kw" data-i="so_m3"></option></select></div><div id="rk"></div></div>
+<div class="card"><h2 data-i="so_vt"></h2><div id="vl"></div><div id="vw" hidden><svg id="vroom" viewBox="0 0 400 260" style="display:block;width:100%;max-width:640px;margin:8px auto;touch-action:none"></svg><div id="vd"></div><button class="g" onclick="$('vw').hidden=true" data-i="so_back"></button></div></div>
+<div class="card ai"><h2 data-i="so_ct"></h2><div class="note" data-i="so_cn"></div><div id="co"></div><div class="row"><button id="cb" onclick="cmpAI()" data-i="so_ai"></button></div><div class="t" id="cv"></div></div>
+</section>
+
+</div><script src="bridge.js"></script><script src="script.js"></script><script src="butterflies.js" defer></script></body></html>

@@ -1,0 +1,17 @@
+/* =========================================================
+   RESPONSIVE — Welcome + App
+========================================================= */
+@media(max-width:1050px){
+  .welcome-links{display:none}.welcome-hero{grid-template-columns:1fr .82fr;padding:32px}.hero-copy h1{font-size:50px}.module-grid{grid-template-columns:1fr 1fr}.welcome-lower-grid{grid-template-columns:1fr}
+}
+@media(max-width:720px){
+  .welcome-shell{width:min(calc(100% - 16px),1440px);margin-top:8px}.welcome-topbar{min-height:64px;padding:8px 9px 8px 12px;border-radius:20px}.welcome-brand small{display:none}.welcome-brand b{font-size:17px}.welcome-logo{width:39px;height:39px}.welcome-actions .btn-ghost{display:none}.welcome-actions{margin-left:auto}.welcome-actions .btn{min-height:40px;padding:7px 12px}
+  .welcome-hero{grid-template-columns:1fr;gap:18px;padding:26px 19px;border-radius:23px;min-height:auto}.hero-copy h1{font-size:40px;letter-spacing:-1.5px}.hero-copy>p{font-size:14px}.hero-actions{display:grid;grid-template-columns:1fr}.hero-workspace{height:270px}.home-illustration{width:220px}.hero-metric{padding:8px 10px;min-width:105px}.hero-metric b{font-size:14px}.hero-robot{bottom:5%}
+  .welcome-section{padding:20px 15px;border-radius:22px}.section-head{display:block}.section-head h2{font-size:23px}.section-head>p{margin-top:7px;text-align:left}.module-grid{grid-template-columns:1fr}.module-card{min-height:135px}.welcome-lower-grid{gap:12px}.welcome-panel{padding:19px 15px;border-radius:22px}.setup-steps{display:grid;grid-template-columns:1fr;gap:10px}.setup-line{display:none}.setup-step small{font-size:10px}.setup-button{float:none;width:100%}.preview-kpis{grid-template-columns:1fr 1fr}.preview-viz{grid-template-columns:1fr}.preview-donut{margin:auto}
+  .auth-dialog{padding:23px 18px;border-radius:22px}
+  .unified-app{width:min(calc(100% - 16px),1360px);margin-top:8px}.account-bar{min-height:62px;padding:8px 10px;border-radius:18px;flex-wrap:wrap}.account-bar>span:first-child{font-size:16px}.account-bar #accountName{max-width:150px}.unified-app nav{top:6px;border-radius:16px}.unified-app nav button{font-size:12px;padding:8px}.unified-app .card{padding:14px;border-radius:17px}.unified-app .row input.n{width:110px}.stats{grid-template-columns:1fr 1fr 1fr}.chip2{padding:8px 7px;gap:5px}.chip2 b{font-size:14px}.chip2>span{font-size:18px}
+}
+@media(max-width:440px){
+  .hero-copy h1{font-size:35px}.metric-budget{display:none}.welcome-actions .btn-primary{font-size:12px}.preview-kpis{grid-template-columns:1fr 1fr}.account-bar #accountName{display:none}.stats{grid-template-columns:1fr}.chip2 b{font-size:17px}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}

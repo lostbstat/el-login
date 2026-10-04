@@ -1,0 +1,76 @@
+/* ตัวแปรสีอยู่ที่ต้นไฟล์ style.css — ต้องโหลด style.css ก่อนไฟล์นี้ */
+/* =========================================================
+   MR ELEC — THEME / DESIGN TOKENS
+   แก้สีหลักของทั้ง Welcome + App ที่ไฟล์นี้
+========================================================= */
+:root{
+  box-sizing:border-box;
+  --brown:var(--primal1);--pink:var(--primal2);--sand:var(--second1);--teal:var(--second2);--mist:var(--base);
+  --brown-dark:var(--primal1-dark);
+  --brown-soft:var(--primal2);
+  --yellow:var(--second1);
+  --yellow-soft:var(--second1-soft);
+  --blue:var(--second2);
+  --blue-soft:var(--second2-soft);
+  --peach:var(--primal2-tint);
+  --green-soft:var(--second2-soft);
+  --cream:var(--base);
+  --cream-2:var(--paper);
+  --white:#fff;
+  --text:var(--ink);
+  --muted:var(--muted);
+  --border:var(--line);
+  --success:var(--ok);
+  --danger:var(--danger);
+  --shadow:0 12px 34px color-mix(in srgb,var(--primal1) 9%,transparent);
+  --shadow-soft:0 4px 16px color-mix(in srgb,var(--primal1) 6%,transparent);
+
+  /* aliases used by the existing app logic/UI */
+  --bg:var(--base);
+  --card:var(--paper);
+  --tx:var(--text);
+  --mu:var(--muted);
+  --bd:var(--border);
+  --field:#fff;
+  --ac:var(--primal2-mid);
+  --bl:var(--second2);
+  --gr:var(--ok);
+  --pr:var(--yellow);
+  --prt:var(--brown);
+  --prh:var(--second1);
+  --t1:var(--second1-soft);
+  --t2:var(--second2-soft);
+  --t3:var(--primal2-tint);
+  --t4:var(--second2-soft);
+  --sh:var(--shadow-soft);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  min-height:100vh;
+  background:
+    radial-gradient(circle at 88% 4%,color-mix(in srgb,var(--second2) 55%,transparent),transparent 30%),
+    radial-gradient(circle at 3% 88%,color-mix(in srgb,var(--second1) 45%,transparent),transparent 27%),
+    var(--cream);
+  color:var(--text);
+  font-family:"Sarabun","Noto Sans Thai",system-ui,sans-serif;
+  line-height:1.5;
+}
+body.modal-open{overflow:hidden}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+a{color:inherit}
+[hidden]{display:none!important}
+.btn{
+  min-height:44px;padding:9px 18px;border-radius:14px;border:1px solid transparent;
+  display:inline-flex;align-items:center;justify-content:center;gap:9px;text-decoration:none;
+  font-weight:700;font-size:14px;transition:.16s ease;
+}
+.btn:hover{transform:translateY(-1px)}
+.btn-primary{background:var(--brown);color:var(--paper);box-shadow:0 8px 20px color-mix(in srgb,var(--primal1) 15%,transparent)}
+.btn-primary:hover{background:var(--brown-dark)}
+.btn-ghost{background:rgba(255,255,255,.72);border-color:var(--line-strong);color:var(--brown)}
+.btn-ghost:hover{background:var(--yellow-soft)}
+.btn-large{min-height:50px;padding:11px 22px;border-radius:16px;font-size:15px}
+.app-error{position:fixed;z-index:999;left:50%;top:16px;transform:translateX(-50%);background:var(--danger-soft);color:var(--danger-dark);border:1px solid var(--danger-line);border-radius:12px;padding:10px 14px;box-shadow:var(--shadow)}

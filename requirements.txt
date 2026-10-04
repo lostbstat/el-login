@@ -1,2 +1,7 @@
-streamlit==1.64.0
-requests>=2.32,<3
+requests>=2.31,<3
+# Optional only if you deploy with Streamlit:
+# streamlit>=1.30
+
+# To retrain the forecast models locally (not needed to run the app):
+#   pip install pandas scikit-learn xgboost lightgbm catboost
+#   python model.py --inject script.js

@@ -58,3 +58,5 @@ $('authForm').onsubmit = async event => {
     if (auth?.user) window.ElectricityPages.open('index.html');
   } catch (error) { $('authMessage').textContent = error.message; }
 })();
+
+$('standaloneGuestButton').onclick = () => { try { sessionStorage.setItem('mrElecGuest', '1'); } catch (e) {} window.ElectricityPages.open('index.html'); };

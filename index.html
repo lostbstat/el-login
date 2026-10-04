@@ -1,72 +1,402 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Electricity AI Assistant</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;700&family=Prompt:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="style.css"></head><body>
+<title>he kuy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;700&family=Mali:wght@600;700&family=Noto+Sans+Thai:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="style.css">
+
+</head><body>
+
+<section id="welcomePage" class="welcome-page wl">
+<svg class="wl-bg" viewBox="0 0 1536 1024" preserveAspectRatio="xMidYMin slice" aria-hidden="true">
+<g fill="none" stroke="var(--primal2-mid)" stroke-width="3" stroke-linejoin="round" opacity=".55"><path d="M130 70 L330 0M130 70 V0M470 40 L640 0M820 60 L760 0M1000 70 L1160 10 L1330 80M1180 60 L1440 0 L1536 40M30 330 L130 270 L240 330V620M20 420H240M1480 380 L1536 340"/><path d="M60 330Q40 400 60 470M200 330Q220 400 200 470" stroke="var(--primal2-tint)"/></g>
+<g fill="#fff" opacity=".8"><ellipse cx="115" cy="62" rx="48" ry="20"/><ellipse cx="150" cy="48" rx="30" ry="22"/><ellipse cx="1400" cy="590" rx="70" ry="24"/><ellipse cx="60" cy="640" rx="60" ry="26"/><ellipse cx="1050" cy="20" rx="60" ry="22"/></g>
+<g fill="var(--second1)" opacity=".85"><path id="st" d="M0-26 8-8 26 0 8 8 0 26-8 8-26 0-8-8Z" transform="translate(93 150) scale(.9)"/><use href="#st" transform="translate(877 38) scale(1.2)"/><use href="#st" transform="translate(1508 285) scale(.9)"/><use href="#st" transform="translate(30 92) scale(.5)"/><use href="#st" transform="translate(1495 55) scale(.6)"/><use href="#st" transform="translate(1510 940) scale(1)"/><use href="#st" transform="translate(20 990) scale(.7)"/></g>
+<g fill="var(--primal2-mid)" opacity=".8"><path d="M1237 62c-30-22-32-48-10-52 12-2 18 6 22 12 4-6 10-14 22-12 22 4 20 30-10 52z" transform="translate(-6 8)" fill="none" stroke="var(--primal2-mid)" stroke-width="4"/><circle cx="1003" cy="115" r="8"/><circle cx="965" cy="105" r="7"/></g>
+</svg>
+
+<div class="wl-account" id="welcomeAccountTools" hidden>
+  <span class="welcome-account-avatar">⚡</span>
+  <span><small>เข้าสู่ระบบแล้ว</small><b id="welcomeAccountName"></b></span>
+  <button type="button" id="welcomeLogoutButton" class="welcome-logout-button" title="ออกจากระบบ">ออกจากระบบ</button>
+</div>
+
+<div id="welcomeGuestTools" class="wl-account" hidden><b>Guest · ทดลองใช้งาน</b><button type="button" onclick="openAuth('login')">เข้าสู่ระบบเพื่อเก็บบ้านนี้</button></div>
+<main id="welcomeStart" class="wl-main">
+  <section class="wl-hero">
+    <div class="wl-copy wl-house">
+      <svg class="wl-defs" width="0" height="0" aria-hidden="true"><defs>
+        <linearGradient id="wlh" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--primal2-mid)"/><stop offset="1" stop-color="var(--primal2)"/></linearGradient><filter id="wob" x="-3%" y="-3%" width="106%" height="106%"><feTurbulence type="fractalNoise" baseFrequency=".02" numOctaves="1" seed="4"/><feDisplacementMap in="SourceGraphic" scale="3"/></filter>
+        </defs></svg>
+      <svg class="wl-cloud c1" viewBox="0 0 120 50"><g fill="#fff"><circle cx="35" cy="30" r="18"/><circle cx="62" cy="22" r="22"/><circle cx="90" cy="32" r="15"/><rect x="22" y="30" width="82" height="18" rx="9"/></g></svg>
+      <svg class="wl-cloud c2" viewBox="0 0 120 50"><g fill="#fff"><circle cx="35" cy="30" r="18"/><circle cx="62" cy="22" r="22"/><circle cx="90" cy="32" r="15"/><rect x="22" y="30" width="82" height="18" rx="9"/></g></svg>
+      <svg class="wl-star s1" viewBox="-30 -30 60 60"><path d="M0-26 7-9 26-6 12 6 16 25 0 15-16 25-12 6-26-6-7-9Z" stroke-linejoin="round"/></svg><svg class="wl-star s2" viewBox="-30 -30 60 60"><path d="M0-26 7-9 26-6 12 6 16 25 0 15-16 25-12 6-26-6-7-9Z" stroke-linejoin="round"/></svg><svg class="wl-star s3" viewBox="-30 -30 60 60"><path d="M0-26 7-9 26-6 12 6 16 25 0 15-16 25-12 6-26-6-7-9Z" stroke-linejoin="round"/></svg><svg class="wl-star s4" viewBox="-30 -30 60 60"><path d="M0-26 7-9 26-6 12 6 16 25 0 15-16 25-12 6-26-6-7-9Z" stroke-linejoin="round"/></svg><svg class="wl-star s5" viewBox="-30 -30 60 60"><path d="M0-26 7-9 26-6 12 6 16 25 0 15-16 25-12 6-26-6-7-9Z" stroke-linejoin="round"/></svg>
+      <div class="wl-hroof">
+        <i class="wl-chimney" aria-hidden="true"></i><svg class="wl-roofsvg" viewBox="0 0 600 190" preserveAspectRatio="none" aria-hidden="true" style="overflow:visible"><polygon points="14,190 300,22 586,190" fill="var(--second1-soft)"/><path d="M14 190 300 22 586 190" fill="none" stroke="var(--primal2-mid)" stroke-width="22" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/><path d="M14 190 300 22 586 190" fill="none" stroke="var(--primal2-mid)" stroke-width="17" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/><path d="M14 190 300 22 586 190" fill="none" stroke="var(--primal2-tint)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" transform="translate(0 -2.5)"/></svg>
+        <svg class="wl-heart" viewBox="0 0 46 42" aria-hidden="true"><path d="M23 39C6 26 2 17 2 11a9 9 0 0 1 16-5l5 5 5-5a9 9 0 0 1 16 5c0 6-4 15-21 28Z" fill="url(#wlh)" stroke="var(--primal2-mid)" stroke-width="2" stroke-linejoin="round"/><ellipse cx="12" cy="11" rx="4" ry="2.6" fill="#fff" opacity=".75" transform="rotate(-30 12 11)"/></svg>
+        <div class="wl-brand">
+        <svg viewBox="0 0 40 40" width="40" height="40" fill="none" stroke="var(--primal2)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20 20 6l15 14M9 17v17h22V17"/><path d="M17 34v-9h6v9"/><path d="M26 8v-4h4v8" /></svg>
+        <span><b>Komi</b><small>Electricity AI Assistant</small></span>
+      </div><svg class="wl-rstar r1" viewBox="-34 -34 68 68" aria-hidden="true"><path d="M0-26 7-9 26-6 12 6 16 25 0 15-16 25-12 6-26-6-7-9Z" fill="var(--second1)" stroke="var(--second1)" stroke-width="9" stroke-linejoin="round"/></svg><svg class="wl-rstar r2" viewBox="-34 -34 68 68" aria-hidden="true"><path d="M0-26 7-9 26-6 12 6 16 25 0 15-16 25-12 6-26-6-7-9Z" fill="var(--second2-mid)" stroke="var(--second2-mid)" stroke-width="9" stroke-linejoin="round"/></svg><svg class="wl-rstar r3" viewBox="-34 -34 68 68" aria-hidden="true"><path d="M0-26 7-9 26-6 12 6 16 25 0 15-16 25-12 6-26-6-7-9Z" fill="var(--second1)" stroke="var(--second1)" stroke-width="9" stroke-linejoin="round"/></svg><svg class="wl-rstar r4" viewBox="-34 -34 68 68" aria-hidden="true"><path d="M0-26 7-9 26-6 12 6 16 25 0 15-16 25-12 6-26-6-7-9Z" fill="var(--base-deep)" stroke="var(--base-deep)" stroke-width="9" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="wl-hb">
+        <div class="wl-up">
+          <i class="wl-win" aria-hidden="true"></i>
+          <svg class="wl-window" viewBox="0 0 70 90" aria-hidden="true"><g stroke-linejoin="round" stroke-linecap="round"><rect x="14" y="14" width="42" height="62" fill="var(--second2-soft)" stroke="var(--second1-deep)" stroke-width="2.5"/><path d="M35 14v62M14 45h42" stroke="var(--second1-deep)" stroke-width="2.5" fill="none"/><path d="M10 78h50" stroke="var(--second1-deep)" stroke-width="4" fill="none"/><path d="M5 4h60v10c-4 5-8 5-10 0-2 5-8 5-10 0-2 5-8 5-10 0-2 5-8 5-10 0-2 5-8 5-10 0-3 5-7 5-10 0z" fill="var(--primal2-mid)" stroke="var(--primal2)" stroke-width="2.2"/><path d="M6 16c10 2 8 20 4 34s2 24 4 28H4c-2-18-2-42 2-62z" fill="var(--second2)" stroke="var(--ok)" stroke-width="2"/><path d="M64 16c-10 2-8 20-4 34s-2 24-4 28h10c2-18 2-42-2-62z" fill="var(--second2)" stroke="var(--ok)" stroke-width="2"/><path d="M10 40c-1 6-1 10 0 14M60 40c1 6 1 10 0 14" stroke="var(--ok)" stroke-width="1.6" fill="none"/></g></svg>
+          <svg class="wl-cabinet" viewBox="0 0 60 110" aria-hidden="true"><g stroke-linejoin="round" stroke-linecap="round"><path d="M4 8h52v8H4z" fill="var(--base-deep)" stroke="var(--muted2)" stroke-width="2.4"/><rect x="8" y="16" width="44" height="52" fill="var(--second2-soft)" stroke="var(--muted2)" stroke-width="2.4"/><path d="M30 16v52" stroke="var(--muted2)" stroke-width="2" fill="none"/><path d="M19 28l2 5 6 .6-4.5 4 1.5 6-5-3-5 3 1.5-6-4.5-4 6-.6z" fill="var(--second2-mid)" stroke="var(--second2-deep)" stroke-width="1.4"/><path d="M41 44l1.6 4 4.4.5-3.3 3 1 4.5-3.7-2.3-3.7 2.3 1-4.5-3.3-3 4.4-.5z" fill="var(--second1)" stroke="var(--second1-deep)" stroke-width="1.4"/><path d="M42 24l1.2 3 3.2.3-2.4 2.2.7 3.2-2.7-1.7-2.7 1.7.7-3.2-2.4-2.2 3.2-.3z" fill="var(--base-deep)" stroke="var(--muted2)" stroke-width="1.2"/><path d="M6 68h48v26H6z" fill="var(--primal2-tint)" stroke="var(--primal2)" stroke-width="2.4"/><path d="M30 68v26" stroke="var(--primal2)" stroke-width="2" fill="none"/><circle cx="24" cy="81" r="2" fill="var(--second1)" stroke="var(--primal2)" stroke-width="1.2"/><circle cx="36" cy="81" r="2" fill="var(--second1)" stroke="var(--primal2)" stroke-width="1.2"/><path d="M10 94v12M50 94v12" stroke="var(--muted2)" stroke-width="3" fill="none"/></g></svg>
+          <div class="wl-text">
+            <h1>เข้าใจ<br>ค่าไฟของคุณ<br><em>ก่อนบิลจะมาถึง</em></h1>
+            <p>Komi ช่วยรวบรวมข้อมูลค่าไฟ เครื่องใช้ไฟฟ้า<br>และงบประมาณไว้ในที่เดียว พร้อม AI ช่วยวิเคราะห์<br>และวางแผนการใช้ไฟให้เข้าใจง่าย</p>
+          </div>
+          <svg class="wl-chair" viewBox="0 0 50 70" aria-hidden="true"><g stroke="var(--primal2)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"><path d="M12 36C6 14 14 5 25 5s16 9 11 31"/><path d="M14 20h20M15 28h19"/><path d="M8 38q17 7 34 0l-2 8q-15 5-30 0z" fill="var(--second1)"/><path d="M12 46l-3 20M38 46l3 20M20 49v17M30 49v17"/></g></svg>
+          <svg class="wl-table" viewBox="0 0 80 64" aria-hidden="true"><g stroke="var(--muted)" stroke-width="2.5" stroke-linejoin="round"><ellipse cx="40" cy="12" rx="37" ry="8" fill="var(--second2-mid)"/><path d="M34 18c0 14-3 24-8 32h28c-5-8-8-18-8-32z" fill="var(--second2-mid)"/><ellipse cx="40" cy="55" rx="22" ry="6" fill="var(--second2-mid)"/></g></svg>
+        </div>
+        <div class="wl-low">
+          <div class="wl-r1"><svg class="wl-sofa" viewBox="0 0 110 90" aria-hidden="true"><g stroke="var(--muted2)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"><path d="M14 38C10 14 24 6 55 6s46 8 41 32l4 30H10z" fill="var(--base-deep)"/><path d="M26 44h58v24H26z" fill="var(--base)"/><path d="M62 30l24-6 6 22-24 6z" fill="var(--second1-soft)" stroke-width="2.5"/><path d="M34 34l14-4 3 14-14 4z" fill="var(--second2)" stroke-width="2.5"/><path d="M18 68v14M92 68v14"/></g></svg></div>
+          <div class="wl-r2"><svg class="wl-bells" viewBox="0 0 110 90" aria-hidden="true"><g stroke="var(--muted)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M18 0v22"/><path d="M8 40q2-18 10-18t10 18z" fill="var(--second2-soft)"/><path d="M14 44q4 4 8 0"/><path d="M58 0v14M58 14l-9-6v10zM58 14l9-6v10z" fill="var(--primal2-mid)"/><path d="M58 18v18"/><path d="M58 36c-9-6-10-10-6-12 3-1 6 2 6 4 0-2 3-5 6-4 4 2 3 6-6 12z" fill="var(--primal2-mid)"/><path d="M58 38v20M58 62l-12 8h24z" fill="var(--base)"/><path d="M92 0v16M92 16l-9-6v10zM92 16l9-6v10z" fill="var(--base-deep)"/><path d="M92 20v22"/><path d="M92 40l5 12 12 1-9 8 3 12-11-7-11 7 3-12-9-8 12-1z" fill="var(--base)" transform="translate(0 4) scale(.85) translate(14 -2)"/></g></svg></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="wl-home welcome-house-preview" role="button" tabindex="0" aria-label="ภาพรวมบ้านของฉัน — กดเพื่อแต่งบ้าน" onclick="openEditableHome()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openEditableHome()}">
+      <div class="wl-home-head"><div><small>บ้านของฉัน</small><b>ภาพรวมบ้าน</b></div><span>ดูอย่างเดียว</span></div>
+      <div class="wl-canvas"><svg id="welcomeRoomPreview" viewBox="0 0 400 260" aria-label="ตัวอย่างบ้านของฉัน" role="img"></svg></div>
+      <div class="wl-home-foot">
+        <span class="wl-pill"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M13 2 4 14h7l-1 8 9-12h-7z" fill="var(--second1-deep)"/></svg><b id="welcomeHomeKwh">28</b>&nbsp;kWh/เดือน</span>
+        <span class="wl-pill"><svg viewBox="0 0 24 24" width="18" height="18"><circle cx="12" cy="12" r="10" fill="var(--second1-deep)"/><circle cx="12" cy="12" r="6.5" fill="none" stroke="#fff" stroke-width="1.6"/></svg><b id="welcomeHomeCost">221</b>&nbsp;<i id="welcomeHomeCurrency">฿</i></span>
+        <small>แผนบ้านได้จากเมนู บ้านฉัน ด้านซ้าย</small>
+      </div>
+    </div>
+
+    <aside class="wl-side" aria-label="สรุปวันนี้">
+      <div class="wl-mini"><svg viewBox="0 0 48 48" width="42" height="42"><circle cx="24" cy="24" r="10" fill="var(--second1-deep)"/><g stroke="var(--second1-deep)" stroke-width="3" stroke-linecap="round"><path d="M24 3v6M24 39v6M3 24h6M39 24h6M9 9l4 4M35 35l4 4M9 39l4-4M35 13l4-4"/></g></svg><div><b>32°C</b><small>กรุงเทพมหานคร<br>15 ส.ค. 2568</small></div></div>
+      <div class="wl-mini col"><svg viewBox="0 0 48 48" width="40" height="40"><rect x="3" y="26" width="10" height="19" rx="3" fill="var(--second2-deep)"/><rect x="18" y="16" width="10" height="29" rx="3" fill="var(--ok)"/><rect x="33" y="5" width="10" height="40" rx="3" fill="var(--ok)"/></svg><div><small>ค่าไฟเดือนนี้</small><b>1,284 บาท</b><span class="dn">↓ 12%</span><small>จากเดือนก่อน</small></div></div>
+      <div class="wl-mini col"><svg viewBox="0 0 48 48" width="44" height="44"><circle cx="24" cy="24" r="22" fill="var(--second2-deep)"/><path d="M26 8 14 27h9l-2 13 13-20h-9z" fill="#fff"/></svg><div><small>หน่วยไฟเดือนนี้</small><b>324 kWh</b><span class="dn">↓ 8%</span><small>จากเดือนก่อน</small></div></div>
+    </aside>
+  </section>
+
+  <section id="welcomeActions" class="wl-panel">
+    <svg class="wl-bow" viewBox="0 0 110 80" width="110" height="80" fill="var(--primal2-tint)" stroke="var(--primal2-mid)" stroke-width="2.5" stroke-linejoin="round"><path d="M60 40 14 10Q4 30 12 50Q30 58 60 40ZM60 40 100 14Q108 36 96 54Q80 56 60 40Z"/><circle cx="60" cy="40" r="9" fill="var(--primal2-mid)"/><path d="M52 48 40 76M66 48l10 28" fill="none"/></svg>
+    <svg class="wl-spark" viewBox="0 0 30 50" width="30" height="50" fill="none" stroke="var(--second1-deep)" stroke-width="2.5" stroke-linecap="round"><path d="M6 10l14 14L6 38"/><path d="M22 6l4 4" stroke="var(--primal2-mid)"/></svg>
+    <div class="wl-panel-head"><span>เริ่มจากสิ่งที่คุณอยากทำ</span><h2>ทุกฟังก์ชันอยู่ใน MR ELEC เดียวกัน</h2><p>หลังเข้าสู่ระบบ คุณสามารถเลือกใช้งานแต่ละฟังก์ชันได้จากหน้านี้</p></div>
+    <div class="wl-cards">
+      <button type="button" class="wl-card blue" onclick="openWelcomeFeature(2)">
+        <span class="wl-ico"><svg viewBox="0 0 48 48" width="46" height="46"><rect x="5" y="26" width="10" height="17" rx="3" fill="var(--second2-deep)"/><rect x="19" y="16" width="10" height="27" rx="3" fill="var(--second2-deep)"/><rect x="33" y="5" width="10" height="38" rx="3" fill="var(--second2-deep)"/></svg></span>
+        <b>ดูภาพรวมค่าไฟ</b><small>ดูค่าไฟย้อนหลัง แนวโน้ม<br>และการพยากรณ์</small>
+        <svg class="wl-art" viewBox="0 0 170 50" width="170" height="50" fill="none"><path d="M3 44l25-10 22 4 28-18 24 8 30-16 18-6" stroke="#FFF1B5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><g fill="#fff" stroke="var(--second2)" stroke-width="2"><circle cx="28" cy="34" r="3.5"/><circle cx="78" cy="20" r="3.5"/><circle cx="130" cy="12" r="3.5"/></g><circle cx="148" cy="6" r="5" fill="var(--second2-deep)"/></svg>
+        <i class="wl-go">→</i></button>
+      <button type="button" class="wl-card yellow" onclick="openWelcomeFeature(1)">
+        <span class="wl-ico"><svg viewBox="0 0 48 48" width="46" height="46"><path d="M24 5v6" stroke="var(--second2-deep)" stroke-width="3" stroke-linecap="round"/><circle cx="24" cy="5" r="3" fill="var(--second2-deep)"/><rect x="6" y="11" width="36" height="28" rx="12" fill="var(--second2-mid)" stroke="var(--second2-deep)" stroke-width="3"/><rect x="11" y="17" width="26" height="16" rx="8" fill="#fff"/><circle cx="19" cy="25" r="3" fill="var(--second2-deep)"/><circle cx="29" cy="25" r="3" fill="var(--second2-deep)"/></svg></span>
+        <b>ถามผู้ช่วย AI</b><small>อัปโหลดบิล ถามคำถาม<br>และให้ AI ช่วยอธิบาย</small>
+        <svg class="wl-art" viewBox="0 0 170 50" width="170" height="50"><path d="M4 8Q4 2 10 2h40q8 0 8 8v18q0 8-8 8H24l-10 9v-9q-10 0-10-8Z" fill="#fff"/><g fill="var(--second2-deep)"><circle cx="20" cy="19" r="3.4"/><circle cx="31" cy="19" r="3.4"/><circle cx="42" cy="19" r="3.4"/></g><rect x="72" y="12" width="94" height="6" rx="3" fill="var(--second1-deep)"/><rect x="72" y="26" width="64" height="6" rx="3" fill="var(--second1-deep)"/></svg>
+        <i class="wl-go">→</i></button>
+      <button type="button" class="wl-card pink" onclick="openWelcomeFeature(3)">
+        <span class="wl-ico"><svg viewBox="0 0 48 48" width="46" height="46"><path d="M16 4v10M30 4v10" stroke="var(--muted)" stroke-width="4" stroke-linecap="round"/><path d="M9 14h27v8q0 10-9 14l-3 7q-3 3-8-1l-1-3q-9-3-9-12Z" fill="var(--primal2)" transform="rotate(14 24 26)"/></svg></span>
+        <b>จัดการเครื่องใช้ไฟฟ้า</b><small>ประเมินการใช้ไฟของแต่ละเครื่อง<br>และดูว่าอะไรใช้ไฟมากที่สุด</small>
+        <svg class="wl-art" viewBox="0 0 170 50" width="170" height="50"><rect x="2" y="12" width="44" height="14" rx="4" fill="#fff" stroke="var(--second2)" stroke-width="2"/><path d="M8 20h32" stroke="var(--second2)" stroke-width="2"/><rect x="58" y="2" width="16" height="44" rx="4" fill="var(--second2-mid)" stroke="var(--second2)" stroke-width="2"/><rect x="84" y="8" width="38" height="26" rx="3" fill="var(--second2-deep)"/><rect x="87" y="11" width="32" height="19" fill="var(--second2)"/><path d="M96 40h14" stroke="var(--second2-deep)" stroke-width="3"/><circle cx="150" cy="22" r="11" fill="var(--second1)" stroke="var(--second1-deep)" stroke-width="2"/><path d="M146 36h8" stroke="var(--muted)" stroke-width="3"/></svg>
+        <i class="wl-go">→</i></button>
+      <button type="button" class="wl-card green" onclick="openWelcomeFeature(4)">
+        <span class="wl-ico"><svg viewBox="0 0 48 48" width="46" height="46" fill="none"><circle cx="22" cy="26" r="17" fill="#fff" stroke="var(--primal2)" stroke-width="4"/><circle cx="22" cy="26" r="10" stroke="var(--primal2)" stroke-width="4"/><circle cx="22" cy="26" r="3.5" fill="var(--primal2)"/><path d="M22 26 40 8M34 6l8-2-2 8z" stroke="var(--ink)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <b>วางแผนค่าไฟ</b><small>ตั้งงบประมาณและวางแผนการใช้งาน<br>ให้เหมาะกับคุณ</small>
+        <svg class="wl-art" viewBox="0 0 170 50" width="170" height="50" fill="none"><g stroke="var(--ok)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 12l5 5 9-10"/><path d="M6 36l5 5 9-10"/></g><rect x="30" y="8" width="96" height="9" rx="4.5" fill="#fff"/><rect x="30" y="32" width="96" height="9" rx="4.5" fill="#fff"/><path d="M138 34l7 8 14-16" stroke="var(--ok)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <i class="wl-go">→</i></button>
+    </div>
+  </section>
+</main>
+</section>
+
+<div id="authModal" class="auth-modal" hidden>
+  <div class="auth-modal-backdrop" onclick="closeAuth()"></div>
+  <section class="auth-modal-card" role="dialog" aria-modal="true" aria-labelledby="modalAuthTitle">
+    <button type="button" class="auth-modal-close" onclick="closeAuth()" aria-label="ปิด">×</button>
+
+    <div class="auth-modal-brand">
+      <span>⚡</span>
+      <div><b>MR ELEC</b><small>Electricity AI Assistant</small></div>
+    </div>
+
+    <h2 id="modalAuthTitle">เข้าสู่ระบบ</h2>
+    <p id="modalAuthIntro">เข้าสู่ระบบเพื่อดูข้อมูลและจัดการค่าไฟของคุณ</p>
+
+    <div class="auth-modal-tabs">
+      <button type="button" id="modalLoginTab" onclick="selectWelcomeAuthMode('login')">เข้าสู่ระบบ</button>
+      <button type="button" id="modalRegisterTab" class="g" onclick="selectWelcomeAuthMode('register')">สมัครสมาชิก</button>
+    </div>
+
+    <form id="welcomeAuthForm">
+      <div id="welcomeNameField" hidden>
+        <label for="welcomeAuthName">ชื่อที่ใช้แสดง</label>
+        <input id="welcomeAuthName" maxlength="80" autocomplete="nickname">
+      </div>
+
+      <label for="welcomeAuthEmail">อีเมล</label>
+      <input id="welcomeAuthEmail" type="email" required maxlength="254" autocomplete="username" placeholder="you@example.com">
+
+      <label for="welcomeAuthPassword">รหัสผ่าน</label>
+      <input id="welcomeAuthPassword" type="password" required minlength="1" maxlength="4096" autocomplete="current-password" placeholder="รหัสผ่านของคุณ">
+
+      <div id="welcomeConfirmField" hidden>
+        <label for="welcomeAuthConfirm">ยืนยันรหัสผ่าน</label>
+        <input id="welcomeAuthConfirm" type="password" minlength="8" maxlength="128" autocomplete="new-password">
+      </div>
+
+      <button type="submit" id="welcomeAuthSubmit">เข้าสู่ระบบ</button>
+    </form>
+
+    <div class="guest-entry"><button type="button" id="guestEntryButton" class="g" onclick="enterGuest()">ทดลองใช้แบบ Guest</button><p class="note">แต่งบ้านและดูการวิเคราะห์ตัวอย่างได้ฟรี<br>เข้าสู่ระบบเมื่อพร้อม บ้านที่แต่งไว้จะอยู่ต่อ</p></div>
+    <p id="welcomeAuthMessage" class="auth-message" role="status" aria-live="polite"></p>
+  </section>
+</div>
+
+
 <p id="appError" class="auth-message" role="status" hidden></p>
 <div id="appShell" hidden>
-<aside class="side"><div class="side-top"><b class="brand">MR. ELEC</b><button id="nt" title="Theme" aria-label="Theme" onclick="$('thm').hidden=!$('thm').hidden">🎨</button></div>
-<nav><button id="n2" class="on" onclick="go(2)"></button><button id="n1" onclick="go(1)"></button><button id="n4" onclick="go(4)"></button><button id="n5" onclick="go(5)"></button><button id="n6" onclick="go(6)"></button><button id="n0" onclick="go(0)" hidden></button><button id="n3" onclick="go(3)" hidden></button></nav>
-<div class="side-foot"><button type="button" id="logoutButton" class="g" title="ออกจากระบบ" aria-label="ออกจากระบบ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 3v9"/><path d="M6.4 6.6a8 8 0 1 0 11.2 0"/></svg></button></div></aside>
-<main class="main"><header class="hero" id="hero"><span id="accountName"></span></header>
-<div class="card" id="thm" hidden><h2 data-i="tk"></h2><div class="row"><button class="g" data-m="light" data-i="tl"></button><button class="g" data-m="dark" data-i="td"></button></div><div class="note" data-i="tp"></div><h2 style="margin-top:16px" data-i="set"></h2><div class="row"><span data-i="lang"></span><select id="lang" style="width:auto"></select><span data-i="cur"></span><input id="cur" value="฿" style="width:70px"></div><div id="tst" class="note"></div></div>
+<aside class="side">
+  <div class="side-top">
+    <b class="brand">MR. ELEC</b>
+</div>
 
-<section id="p0">
-<div class="hw"><div class="stats" id="chips"></div><div class="card stage"><div class="tb"><h2 data-i="rm_t" style="margin:0"></h2><div class="tools"><button class="g" id="lk" onclick="LOCK=!LOCK;room()"></button><button class="g" onclick="apps=SAMP.map(a=>({...a}));SEL=null;SELF=null;pl()" data-i="rm_s"></button><button class="g" onclick="apps=[];FUR=[];SEL=null;SELF=null;pl()" data-i="rm_c"></button><button class="g" onclick="DEC=!DEC;room()" data-i="rm_d"></button><button class="g" onclick="$('dec').hidden=!$('dec').hidden" data-i="dc_t"></button></div></div>
+  <div class="side-user side-home-card" onclick="openEditableHome()" role="button" tabindex="0"
+       onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openEditableHome()}"
+       aria-label="บ้านฉัน">
+    <div class="side-home-thumb" aria-hidden="true">
+      <div class="side-home-roof"></div>
+      <div class="side-home-body">
+        <span class="side-home-window"></span>
+        <span class="side-home-door"></span>
+      </div>
+    </div>
+
+    <div class="side-user-copy">
+      <small>หน้าหลัก</small>
+      <b>บ้านฉัน</b>
+      <span id="accountName" class="side-home-owner"></span>
+    </div>
+
+    <span class="side-home-arrow">›</span>
+  </div>
+
+  <nav class="side-nav" aria-label="เมนูหลัก">
+    <button id="n0" class="on" onclick="showWelcome(accountUser)"></button>
+    <button id="n2" onclick="go(2)"></button>
+    <button id="n1" onclick="go(1)"></button>
+    <button id="n3" onclick="go(3)"></button>
+    <button id="n4" onclick="go(4)"></button>
+</nav>
+
+  <div id="guestBanner" class="guest-account-prompt" hidden>
+    <small>กำลังทดลองใช้แบบ Guest</small>
+    <button type="button" id="guestLoginButton" onclick="openAuth('login')">เข้าสู่ระบบ</button>
+  </div>
+  <div class="side-foot">
+    <button type="button" id="settingsButton" class="g"
+            title="ตั้งค่า" aria-label="ตั้งค่า"
+            onclick="go(5)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+           stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"
+           aria-hidden="true">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6 1.7 1.7 0 0 0-.4 1.1V21h-4v-.09A1.7 1.7 0 0 0 8.6 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-.6-1 1.7 1.7 0 0 0-1.1-.4H3v-4h.09A1.7 1.7 0 0 0 4.6 8.6a1.7 1.7 0 0 0-.34-1.88l-.06-.06 2.83-2.83.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-.6 1.7 1.7 0 0 0 .4-1.1V3h4v.09A1.7 1.7 0 0 0 15.4 4.6a1.7 1.7 0 0 0 1.88-.34l.06-.06 2.83 2.83-.06.06A1.7 1.7 0 0 0 19.4 9c.17.37.38.7.6 1 .28.35.64.55 1.1.6H21v4h-.09a1.7 1.7 0 0 0-1.51.4Z"/>
+      </svg>
+    </button>
+    <button type="button" id="logoutButton" class="g"
+            title="ออกจากระบบ" aria-label="ออกจากระบบ">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+           stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+        <path d="M12 3v9"/>
+        <path d="M6.4 6.6a8 8 0 1 0 11.2 0"/>
+      </svg>
+    </button>
+  </div>
+</aside>
+
+<main class="main">
+
+<p id="guestStorageNotice" class="note" hidden>เบราว์เซอร์ไม่อนุญาตให้บันทึกข้อมูล บ้านยังอยู่ในหน้านี้ แต่อาจหายเมื่อปิดเว็บ</p>
+
+<section id="p0" hidden>
+  <div class="friends-room-area editable-house-panel" aria-label="บ้านของฉัน">
+  <div class="friends-room-label">
+    <span>🏠 บ้านฉัน</span>
+    <small>แต่งห้อง วางเครื่องใช้ ลากย้าย หมุน และปรับรายละเอียดได้จากหน้านี้</small>
+  </div>
+<div class="hw"><div class="stats" id="chips"></div><div class="card stage"><div class="tb"><h2 data-i="rm_t" style="margin:0"></h2><div class="tools"><button class="g" id="shb" onclick="openShop()" data-i="sh_btn"></button><button class="g" id="lk" onclick="LOCK=!LOCK;room()"></button><button class="g" onclick="apps=SAMP.map(a=>({...a}));SEL=null;SELF=null;room()" data-i="rm_s"></button><button class="g" onclick="apps=[];FUR=[];SEL=null;SELF=null;room()" data-i="rm_c"></button><button class="g" onclick="tgB()" data-i="bd_t"></button><button class="g" onclick="DEC=!DEC;room()" data-i="rm_d"></button><button class="g" onclick="G.h=!G.h;gdSave();room()" data-i="gd_t"></button><button class="g" id="wkb" onclick="wkTog()"></button><button class="g" onclick="$('dec').hidden=!$('dec').hidden" data-i="dc_t"></button></div></div>
 <svg id="room" viewBox="0 0 400 260" style="display:block;width:100%;max-width:720px;margin:0 auto;background:transparent;border-radius:18px;touch-action:none;user-select:none"></svg>
-<div id="dec" class="selbar" hidden><span data-i="dc_p"></span><span id="dcp" style="display:flex;gap:4px"></span><span data-i="dc_w"></span><input type="color" id="cl" value="#f2a285" oninput="RC.l=this.value;room()"><input type="color" id="cr" value="#fff6e6" oninput="RC.r=this.value;room()"><span data-i="dc_f"></span><input type="color" id="cf" value="#ecc99a" oninput="RC.f=this.value;room()"><select id="cfs" onchange="RC.fs=this.value;room()"><option value="grid" data-i="dc_g"></option><option value="wood" data-i="dc_wd"></option><option value="tile" data-i="dc_tl"></option></select><select id="cws" onchange="RC.ws=this.value;room()"><option value="" data-i="dc_pl"></option><option value="stripe" data-i="dc_st"></option></select></div>
+<div id="gdw" hidden><div class="row" style="margin:6px 0;gap:6px;align-items:center"><span class="note" id="gds" style="margin:0"></span><span class="sp"></span><button class="g sm" onclick="PTS+=100;sv2();gdRender()" title="เสกดาว +100" aria-label="เสกดาว">🌟+100</button><button class="g sm" onclick="G.w+=10;gdSave();gdRender()" title="เสกน้ำ +10" aria-label="เสกน้ำ">💧+10</button></div><div id="gdbd"><div class="gdtl" id="gdtl"></div><div class="note" id="gdh"></div><div class="row" style="margin-top:6px"><button class="g sm" onclick="gdReset()" title="ล้างสวน" aria-label="ล้างสวน">🗑️</button></div></div></div>
+<div id="dec" class="selbar" hidden><span data-i="dc_p"></span><span id="dcp" style="display:flex;gap:4px"></span><span data-i="dc_w"></span><input type="color" id="cl" value="#F17424" oninput="RC.l=this.value;room()"><input type="color" id="cr" value="#F3EFDD" oninput="RC.r=this.value;room()"><span data-i="dc_f"></span><input type="color" id="cf" value="#F3D36A" oninput="RC.f=this.value;room()"><select id="cfs" onchange="RC.fs=this.value;room()"><option value="grid" data-i="dc_g"></option><option value="wood" data-i="dc_wd"></option><option value="tile" data-i="dc_tl"></option></select><select id="cws" onchange="RC.ws=this.value;room()"><option value="" data-i="dc_pl"></option><option value="stripe" data-i="dc_st"></option></select></div>
+<div id="bld" class="selbar" hidden><b data-i="bd_s"></b><button class="g sm" onclick="rsz(-1)">−</button><b id="nn">6×6</b><button class="g sm" onclick="rsz(1)">+</button><span class="sp"></span><button class="tab" id="bdw" onclick="setBM('w')" data-i="bd_w"></button><button class="tab" id="bdd" onclick="setBM('d')" data-i="bd_d"></button><button class="tab" id="bdp" onclick="setBM('p')" data-i="bd_p"></button><button class="tab" id="bde" onclick="setBM('x')" data-i="bd_x"></button><button class="g sm" onclick="WL=[];room()" data-i="bd_c"></button><button class="g sm" onclick="POOL=new Set();room()" data-i="bd_cp"></button></div>
 <div id="rsel" class="selbar"></div>
 <div class="tabs"><button id="tA" class="tab on" onclick="PT=0;room()" data-i="pt_a"></button><button id="tF" class="tab" onclick="PT=1;room()" data-i="pt_f"></button></div>
-<div class="pal" id="pal"></div></div></div>
+<div class="pal" id="pal"></div></div><div id="av" class="card"></div><div id="mini" class="card lk" tabindex="0" role="button" onclick="openHomeComparison()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openHomeComparison()}"></div></div>
+
 <div id="hub" hidden></div>
-</section>
-<section id="p5" hidden>
-<input id="bft" type="hidden" value="0.95">
-<div class="card" id="oc"><h2 data-i="oc_t"></h2><div class="note" data-i="oc_n"></div>
-<div class="row"><span data-i="oc_u"></span><input id="ocu" type="number" oninput="occ()"><span data-i="oc_a"></span><input id="oca" type="number" oninput="occ()"><button class="g" onclick="ocl()" data-i="oc_l"></button></div>
-<div class="row"><span data-i="oc_mp"></span><input id="omp" type="number" oninput="occ()"><span data-i="oc_mc"></span><input id="omc" type="number" oninput="occ()"></div>
-<div id="oco"></div><div class="note" data-i="oc_w"></div></div>
-</section>
+</div>
+<div id="homeSocialLogin" class="card" hidden><p class="note">เข้าสู่ระบบเพื่อดูอันดับและเปรียบเทียบการใช้ไฟกับเพื่อน</p><button type="button" onclick="openAuth('login')">เข้าสู่ระบบ</button></div>
+<div id="homeSocialContent" hidden>
+<div class="usage-social-divider">
+  <div>
+    <span>📊 การเปรียบเทียบการใช้ไฟ</span>
+    <small>ดูอันดับ การตั้งค่าความเป็นส่วนตัว และเปรียบเทียบการใช้ไฟกับเพื่อน</small>
+  </div>
+</div>
 
-<section id="p1" hidden>
-<div class="card"><h2 data-i="s2"></h2><div id="rows"></div><div class="row"><button class="g" onclick="addRow()" data-i="add"></button><input type="file" id="f" accept="image/*" multiple style="width:auto;max-width:100%"><button id="rd" onclick="readBills()" data-i="read"></button></div><div id="st" class="note" data-i="hint"></div></div>
-<details class="card" id="dtl"><summary><b data-i="hm_at"></b></summary><div class="note" style="margin:8px 0" data-i="an"></div><div class="note" style="margin:0 0 8px" data-i="pl_an"></div><div class="note" style="margin:0 0 8px" data-i="mdn"></div><div class="row" style="margin:0 0 8px;justify-content:flex-end"><button type="button" onclick="toggleUserAdd()" data-i="aa"></button></div><div id="userAddPanel" class="user-add-panel" hidden><div class="row" style="margin:0"><select id="userAppliancePick" style="flex:1;min-width:180px"></select><button class="g" type="button" onclick="addUserAppliance()" data-i="add_confirm"></button></div></div><div id="pa"></div><select id="psh" hidden></select></details>
-</section>
 
-<section id="p2" hidden>
-<div id="kpi" class="dashboard-kpis"></div>
-<div class="card dashboard-chart"><h2 data-i="ct"></h2><div id="c1"></div><div class="note" data-i="cn"></div></div>
-</section>
 
-<section id="p3" hidden>
-<div id="es"></div>
-<div class="card ai" id="insc" hidden><h2 data-i="it"></h2><div class="row"><button id="ib" onclick="insights()" data-i="ib"></button></div><div class="t" id="iv"></div><div id="tips"></div></div>
-</section>
-
-<section id="p4" hidden>
-<div class="card"><h2 data-i="pl_t"></h2><div class="note" style="margin:0 0 8px" data-i="pl_n"></div><div class="row" style="justify-content:space-between;margin:0"><span id="pctx" class="note" style="margin:0"></span><button class="g" onclick="go(0)" data-i="ed_b"></button></div></div>
-<div class="card"><h2 data-i="hm_s"></h2>
-<div class="row"><span data-i="pl_b"></span><input id="pb" type="number" placeholder="1500" oninput="plan()"><span data-i="pr"></span><input id="price" type="number" step="0.01" value="8" oninput="plan()"></div>
-<div class="row"><span data-i="pl_f"></span><input id="pf" type="number" value="0" oninput="plan()"><span data-i="pl_l"></span><input id="pw" type="number" value="2200" oninput="plan()"></div>
-<div class="note" data-i="pl_lh"></div><div class="note" id="pnote"></div></div>
-<div id="po"></div>
-<div class="card ai" id="pai"><div class="row"><button id="pi" onclick="planAI()" data-i="pl_ai"></button></div><div class="note" id="ph"></div><div class="t" id="pv"></div></div>
-</section>
-
-<section id="p6" hidden>
 <div class="card"><h2 data-i="so_t"></h2><div class="note" data-i="so_n"></div>
 <div class="row"><span data-i="so_v"></span><select id="mvis" onchange="ME.vis=this.value;soc()"><option value="all" data-i="so_va"></option><option value="friends" data-i="so_vf"></option><option value="none" data-i="so_vn"></option></select><span data-i="so_pp"></span><input type="number" min="1" value="1" style="width:64px" oninput="ME.pp=Math.max(1,+this.value||1);soc()"></div>
 <div class="row"><label><input type="checkbox" checked style="width:auto" onchange="ME.rk=+this.checked;soc()"> <span data-i="so_rk"></span></label></div>
 <div class="row"><label><input type="checkbox" checked style="width:auto" onchange="ME.det=+this.checked;soc()"> <span data-i="so_det"></span></label></div></div>
 <div class="card"><div class="row" style="justify-content:space-between;margin-top:0"><h2 style="margin:0" data-i="so_rt"></h2><select id="rmet" onchange="soc()"><option value="sv" data-i="so_m1"></option><option value="pp" data-i="so_m2"></option><option value="kw" data-i="so_m3"></option></select></div><div id="rk"></div></div>
 <div class="card"><h2 data-i="so_vt"></h2><div id="vl"></div><div id="vw" hidden><svg id="vroom" viewBox="0 0 400 260" style="display:block;width:100%;max-width:640px;margin:8px auto;touch-action:none"></svg><div id="vd"></div><button class="g" onclick="$('vw').hidden=true" data-i="so_back"></button></div></div>
-<div class="card ai"><h2 data-i="so_ct"></h2><div class="note" data-i="so_cn"></div><div id="co"></div><div class="row"><button id="cb" onclick="cmpAI()" data-i="so_ai"></button></div><div class="t" id="cv"></div></div>
+</div>
 </section>
 
+<section id="p5" hidden>
+<div class="settings-page-head">
+  <div>
+    <span>⚙️</span>
+    <div>
+      <h1 data-i="set"></h1>
+      <small>ปรับภาษา ค่าไฟ งบประมาณ และรูปแบบการแสดงผลของ MR ELEC</small>
+    </div>
+  </div>
+</div>
+
+<div class="card settings-theme-card" id="thm">
+  <h2 data-i="tk"></h2><div class="row"><input type="color" id="pick" value="#A5BAE7" aria-label="color"><div id="sws" class="row" style="margin:0;gap:8px"></div></div><div class="note" data-i="tp"></div><div class="row"><button class="g" data-m="auto" data-i="ta"></button><button class="g" data-m="light" data-i="tl"></button><button class="g" data-m="dark" data-i="td"></button><button class="g" id="trs" data-i="tkr" style="margin-left:auto"></button></div>
+</div>
+
+<div class="card"><h2 data-i="set"></h2><div class="row"><span data-i="lang"></span><select id="lang" style="width:auto"></select><span data-i="cur"></span><input id="cur" value="฿" style="width:70px"></div><div id="tst" class="note"></div></div>
+</section>
+
+<section id="p1" hidden>
+  <div class="card bill-editor-card">
+    <h2 data-i="s2"></h2>
+
+    <div class="bill-grid-head">
+      <div data-i="col_m"></div>
+      <div data-i="col_a"></div>
+      <div data-i="col_k"></div>
+      <div></div>
+    </div>
+
+    <div id="rows"></div>
+
+    <div class="bill-editor-bottom">
+      <div class="bill-entry-actions">
+        <button class="g" onclick="addRow()" data-i="add"></button>
+        <button type="button" id="billDemoButton" class="g" onclick="demo()" data-i="demo" hidden></button>
+        <button type="button" id="clearBillsButton" class="g" onclick="clearBills()" data-i="clear_bills" disabled>ลบทั้งหมด</button>
+      </div>
+
+      <div class="bill-upload-tools">
+        <div class="bill-file-wrap">
+          <input type="file" id="f" accept="image/*" multiple>
+        </div>
+        <button id="rd" onclick="readBills()" data-i="read"></button>
+      </div>
+
+      <button class="bill-dashboard-btn" onclick="go(2)" data-i="go"></button>
+    </div>
+
+    <div id="st" class="note bill-upload-note" data-i="hint"></div>
+  </div>
+
+  <div class="card ai" id="aiCard">
+    <h2 data-i="s3"></h2>
+    <div class="chips" id="chatChips"></div>
+    <div id="log"></div>
+    <div class="row">
+      <textarea id="q" rows="2" data-p="pq" style="flex:1;min-width:200px"></textarea>
+      <button id="sd" onclick="ask()" data-i="send"></button>
+      <button class="g" id="sp" onclick="ctl&&ctl.abort()" hidden data-i="stop"></button>
+    </div>
+    <div class="note" data-i="note"></div>
+  </div>
+
+</section>
+
+<section id="p2" hidden>
+<div id="kpi" class="grid"></div>
+
+<div class="card dash-chart-card">
+  <div class="dash-head">
+    <span class="dash-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 20V11M12 20V4M19 20v-6"/></svg></span>
+    <h2 data-i="ct"></h2>
+  </div>
+  <div id="c1"></div>
+</div>
+
+<!-- แสดงเฉพาะ "การเปลี่ยนแปลงรายเดือน"
+     ส่วนการ์ดสรุปโมเดลเดิมและเช็กงบรายเดือนถูกเอาออกแล้ว -->
+<div class="card monthly-change-card">
+  <div class="dash-head">
+    <span class="dash-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 6-7"/></svg></span>
+    <div class="dash-head-text">
+      <h2 data-i="mch"></h2>
+      <p class="note monthly-change-note">คลิกแต่ละเดือนเพื่อโฟกัสแท่งเดียวกันในกราฟด้านบน</p>
+    </div>
+  </div>
+  <div id="pat"></div>
+</div>
+
+<!-- เก็บ element budget แบบซ่อนเพื่อไม่ให้ logic เดิม error -->
+<span id="bh2" hidden></span>
+<div id="bo" hidden></div>
+
+<div class="card ai dash-ai">
+  <div class="dash-ai-row">
+    <span class="dash-ai-avatar" aria-hidden="true">🤖</span>
+    <h2 data-i="st2"></h2>
+    <button id="sm" type="button" onclick="summ()"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M11 2l2.3 6.7L20 11l-6.7 2.3L11 20l-2.3-6.7L2 11l6.7-2.3z"/><path d="M19 14l.9 2.1 2.1.9-2.1.9L19 20l-.9-2.1-2.1-.9 2.1-.9z"/></svg><span data-i="sb"></span></button>
+  </div>
+  <div class="t" id="sv"></div>
+</div>
+</section>
+
+<section id="p3" hidden>
+<div class="card" id="elCard">
+    <h2>🔌 <span data-i="hm_at"></span></h2>
+    <div class="note" data-i="an"></div>
+    <div class="note" data-i="pl_an"></div>
+    <div class="row">
+      <select id="psh" onchange="addEl(this.value);this.value=''" style="width:auto"></select>
+      <button class="g" onclick="elSample()" data-i="el_s"></button>
+      <button class="g" onclick="elClear()" data-i="el_c"></button>
+    </div>
+    <div id="pa"></div>
+  </div>
+
+  <div class="ai-energy-analysis">
+    <div class="card ai-energy-heading">
+      <h2>⚡ วิเคราะห์การใช้ไฟจากเครื่องใช้ไฟฟ้า</h2>
+      <div class="note">สรุปการใช้ไฟต่อวัน ต่อเดือน สัดส่วนแต่ละเครื่อง และเปรียบเทียบกับบิลจริง</div>
+    </div>
+    <div id="es"></div>
+  </div>
+
+<div class="card ai" id="insc" hidden>
+      <h2 data-i="it"></h2>
+      <div class="row"><button id="ib" onclick="insights()" data-i="ib"></button></div>
+      <div class="t" id="iv"></div>
+      <div id="tips"></div>
+    </div>
+</section>
+
+<section id="p4" hidden>
+<div id="po"></div>
+<div class="card"><h2 data-i="hm_s"></h2>
+<div class="row"><span data-i="pl_b"></span><input id="pb" type="number" placeholder="1500" oninput="plan()"><span data-i="pr"></span><input id="price" type="number" step="0.01" value="8" oninput="plan()"></div>
+<div class="row"><span data-i="pl_f"></span><input id="pf" type="number" value="0" oninput="plan()"><span data-i="pl_l"></span><input id="pw" type="number" value="2200" oninput="plan()"></div>
+<div class="note" data-i="pl_lh"></div><div class="note" id="pnote"></div></div>
+<div id="bc" hidden aria-hidden="true"><input id="bft" type="number" step="0.01" value="0.95"><input id="bu" type="number"><b id="bo1"></b><input id="ba" type="number"><b id="bo2"></b></div>
+<div class="card" id="oc"><h2 data-i="oc_t"></h2><div class="note" data-i="oc_n"></div>
+<div class="row"><span data-i="oc_u"></span><input id="ocu" type="number" oninput="occ()"><span data-i="oc_a"></span><input id="oca" type="number" oninput="occ()"><button class="g" onclick="ocl()" data-i="oc_l"></button></div>
+<div class="row"><span data-i="oc_mp"></span><input id="omp" type="number" oninput="occ()"><span data-i="oc_mc"></span><input id="omc" type="number" oninput="occ()"></div>
+<div id="oco"></div><div class="note" data-i="oc_w"></div></div>
+<div class="card ai" id="pai"><div class="row"><button id="pi" onclick="planAI()" data-i="pl_ai"></button></div><div class="note" id="ph"></div><div class="t" id="pv"></div></div>
+</section>
 </main>
-<aside id="aiPanel" class="aipanel" hidden><div class="card"><h2 data-i="s3"></h2><div class="chips" id="chatChips"></div><div id="log"></div>
-<div class="row"><textarea id="q" rows="2" data-p="pq" style="flex:1;min-width:200px"></textarea><button id="sd" onclick="ask()" data-i="send"></button><button class="g" id="sp" onclick="ctl&&ctl.abort()" hidden data-i="stop"></button></div><div class="note" data-i="note"></div></div>
-</aside>
-<button type="button" class="fab" onclick="$('aiPanel').hidden=!$('aiPanel').hidden" aria-label="AI">AI</button>
-</div><script src="bridge.js"></script><script src="script.js"></script></body></html>
+</div>
+<div id="shm" class="shm" hidden onclick="if(event.target===this)shopClose()"><div class="shd" role="dialog" aria-modal="true"><button class="shx g" onclick="shopClose()" aria-label="close">✕</button><div id="shh"></div><div class="tabs" id="sht"></div><div id="shl" class="shg"></div></div></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script><script src="bridge.js"></script><script src="script.js"></script><script src="butterflies.js" defer></script></body></html>

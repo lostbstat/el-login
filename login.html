@@ -2,7 +2,7 @@
 <html lang="th"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>เข้าสู่ระบบ — Electricity AI</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;700&family=Prompt:wght@400;500;600&display=swap">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mali:wght@600;700&family=Noto+Sans+Thai:wght@400;500;600;700;800&family=Sarabun:wght@400;500;700&display=swap">
 <link rel="stylesheet" href="style.css"></head><body>
 <section id="authPage" class="auth-page" aria-labelledby="authTitle">
   <div class="card auth-card">
@@ -20,7 +20,8 @@
       <div id="confirmField" hidden><label for="authConfirm">ยืนยันรหัสผ่าน</label><input id="authConfirm" type="password" minlength="8" maxlength="128" autocomplete="new-password"></div>
       <button type="submit" id="authSubmit" disabled>เข้าสู่ระบบ</button>
     </form>
+    <div class="guest-entry"><button type="button" id="standaloneGuestButton" class="g">ทดลองใช้แบบ Guest</button><p class="note">แต่งบ้านและดูการวิเคราะห์ตัวอย่าง · เข้าสู่ระบบเมื่อพร้อมเพื่อเก็บบ้านนี้</p></div>
     <p id="authMessage" class="auth-message" role="status" aria-live="polite">กำลังเชื่อมต่อ...</p>
   </div>
 </section>
-<script src="bridge.js"></script><script src="login.js"></script></body></html>
+<script src="bridge.js"></script><script src="login.js"></script><script src="butterflies.js" defer></script></body></html>
