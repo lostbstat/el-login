@@ -76,21 +76,35 @@
   try { window.parent.addEventListener('resize', updateHostViewport); } catch (error) { /* Cross-origin iframe. */ }
 
   const storageKey = 'electricity.remembered-session.v1';
+  const cookieKey = 'electricity_remembered_session';
+  function validSession(value) {
+    return value && typeof value.ticket === 'string' && /^[A-Za-z0-9_-]{1,256}$/.test(value.ticket)
+      && Number.isFinite(value.expiresAt) && value.expiresAt > Date.now();
+  }
   function readSession() {
     try {
       const value = JSON.parse(localStorage.getItem(storageKey) || 'null');
-      if (value && typeof value.ticket === 'string' && value.ticket.length <= 256 && value.expiresAt > Date.now()) return value;
+      if (validSession(value)) return value;
       localStorage.removeItem(storageKey);
     } catch (error) { /* Storage can be disabled by the browser. */ }
+    try {
+      const cookie = document.cookie.split(';').map(part => part.trim()).find(part => part.startsWith(cookieKey + '='));
+      const value = cookie ? JSON.parse(decodeURIComponent(cookie.slice(cookieKey.length + 1))) : null;
+      if (validSession(value)) return value;
+    } catch (error) { /* Cookies can also be disabled by the browser. */ }
     return null;
   }
   let remembered = readSession();
   function remember(value) {
-    remembered = value || null;
+    remembered = validSession(value) ? { ticket: value.ticket, expiresAt: value.expiresAt } : null;
     try {
       if (remembered) localStorage.setItem(storageKey, JSON.stringify(remembered));
       else localStorage.removeItem(storageKey);
     } catch (error) { /* Login still works without persistent storage. */ }
+    try {
+      const age = remembered ? Math.max(1, Math.floor((remembered.expiresAt - Date.now()) / 1000)) : 0;
+      document.cookie = `${cookieKey}=${remembered ? encodeURIComponent(JSON.stringify(remembered)) : ''}; Path=/; Max-Age=${age}; SameSite=Lax${window.location.protocol === 'https:' ? '; Secure' : ''}`;
+    } catch (error) { /* Cookie backup is optional. No password or provider token is stored. */ }
   }
   let config = null, active = null, counter = 0, readyResolve, initialized = false;
   const ready = new Promise(resolve => { readyResolve = resolve; });
@@ -129,17 +143,21 @@
     const args = event.data.args || {};
     if (args.config) {
       config = args.config;
+      // Login can finish on a render before its response is acknowledged. Save
+      // the server-issued ticket on every authenticated render as well.
+      if (config.auth?.user && validSession(config.auth.rememberedSession)) remember(config.auth.rememberedSession);
       if (!initialized) {
         initialized = true;
-        if (config.auth?.user) {
-          remember(config.auth.rememberedSession);
-          readyResolve(config);
-        } else if (remembered && config.auth?.enabled) {
+        if (remembered && config.auth?.enabled) {
           window.StreamlitBridge.request({ action: 'auth.status' }).then(result => {
-            config = { ...config, auth: { ...config.auth, user: result.user } };
+            readyResolve({ ...config, auth: { ...config.auth, user: result.user,
+              rememberedSession: result.rememberedSession } });
           }).catch(error => {
-            if (['unauthorized', 'invalid_credentials'].includes(error.code)) remember(null);
-          }).finally(() => readyResolve(config));
+            if (['unauthorized', 'invalid_credentials'].includes(error.code)) {
+              remember(null);
+              readyResolve({ ...config, auth: { ...config.auth, user: null } });
+            } else readyResolve(config);
+          });
         } else readyResolve(config);
       }
     }

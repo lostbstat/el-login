@@ -11,7 +11,7 @@ DEFAULT_MODEL = "gemini-3.5-flash-lite"
 MAX_IMAGES = 4
 MAX_IMAGE_BYTES = 3 * 1024 * 1024
 IMAGE_TYPES = ("image/png", "image/jpeg", "image/webp", "image/heic", "image/heif")
-PUBLIC_ASSETS = ("index.html", "script.js", "style.css", "login.html", "login.js", "bridge.js", "butterflies.js")
+PUBLIC_ASSETS = ("index.html", "script.js", "style.css", "login.html", "login.js", "bridge.js", "butterflies.js", "weather.js")
 
 
 class GeminiError(Exception):
@@ -114,10 +114,10 @@ import sys
 import tempfile
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import urlsplit
+from urllib.parse import unquote, urlsplit
 from http.cookies import SimpleCookie
 
-from auth import AuthError, AuthService
+from auth import AuthError, AuthService, SESSION_SECONDS
 
 
 def run_streamlit():
@@ -146,6 +146,17 @@ def run_streamlit():
     if "auth_ticket" not in st.session_state:
         st.session_state.auth_ticket = ""
         st.session_state.auth_client = secrets.token_urlsafe(16)
+    if not st.session_state.auth_ticket:
+        # F5 creates a new Streamlit connection. Its browser cookie can restore
+        # a verified session before the frontend renders the login screen.
+        try:
+            stored = json.loads(unquote(st.context.cookies.get("electricity_remembered_session", "null")))
+            ticket = stored.get("ticket", "") if isinstance(stored, dict) else ""
+            if isinstance(ticket, str) and 0 < len(ticket) <= 256:
+                auth.require_user(ticket)
+                st.session_state.auth_ticket = ticket
+        except (AttributeError, KeyError, ValueError, TypeError, AuthError):
+            pass  # The component can still restore from its own storage.
     @st.cache_resource
     def public_assets(*texts):
         # Only these public assets are served by the component.
@@ -172,8 +183,11 @@ def run_streamlit():
         st.session_state.gemini_response = None
         st.session_state.gemini_last_request = None
 
+    account_config = auth.config(st.session_state.auth_ticket)
+    account_config["rememberedSession"] = auth.remembered_session(st.session_state.auth_ticket)
+    account_config["sessionPersistenceVersion"] = 2
     request = frontend(
-        config={**public_config(api_key), "auth": auth.config(st.session_state.auth_ticket)},
+        config={**public_config(api_key), "auth": account_config},
         response=st.session_state.gemini_response,
         key="electricity-ui",
         default=None,
@@ -188,11 +202,19 @@ def run_streamlit():
                 payload = request.get("payload")
                 if not isinstance(payload, dict):
                     raise AuthError("รูปแบบคำขอไม่ถูกต้อง", "invalid_request")
-                if str(payload.get("action", "")).startswith("auth."):
-                    result, ticket = auth.handle(payload, st.session_state.auth_ticket, client=st.session_state.auth_client)
+                action = str(payload.get("action", ""))
+                candidate = payload.get("_session", "")
+                candidate = candidate if isinstance(candidate, str) and len(candidate) <= 256 else ""
+                if action.startswith("auth."):
+                    # A browser ticket is checked by AuthService before restoring a new WebSocket session.
+                    ticket = (candidate or st.session_state.auth_ticket) if action == "auth.status" else (st.session_state.auth_ticket or candidate)
+                    result, ticket = auth.handle(payload, ticket, client=st.session_state.auth_client)
                     st.session_state.auth_ticket = ticket
+                    result["rememberedSession"] = auth.remembered_session(ticket)
                 else:
-                    auth.require_user(st.session_state.auth_ticket)
+                    ticket = st.session_state.auth_ticket or candidate
+                    auth.require_user(ticket)
+                    st.session_state.auth_ticket = ticket
                     result = {"text": generate(payload, api_key=api_key, model=model)}
                 answer = {"id": request_id, "ok": True, "result": result}
             except AuthError as exc:
@@ -257,7 +279,7 @@ def create_server(directory, port=3000, settings=None):
             self.send_header("Cache-Control", "no-store")
             self.send_header("X-Content-Type-Options", "nosniff")
             if ticket is not None:
-                self.send_header("Set-Cookie", f"electricity_session={ticket}; HttpOnly; SameSite=Strict; Path=/; Max-Age={43200 if ticket else 0}")
+                self.send_header("Set-Cookie", f"electricity_session={ticket}; HttpOnly; SameSite=Strict; Path=/; Max-Age={SESSION_SECONDS if ticket else 0}")
             self.end_headers()
             try:
                 self.wfile.write(body)

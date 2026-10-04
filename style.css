@@ -1718,6 +1718,7 @@ body:has(#appShell:not([hidden])) {
   margin: 24px 0 14px;
   padding: 15px 18px;
   border: 1px solid var(--bd);
+  box-shadow: var(--sh);
   border-radius: 16px;
   background:
     linear-gradient(90deg, color-mix(in srgb,var(--second2) 42%,transparent), color-mix(in srgb,var(--second1) 38%,transparent));
@@ -4451,7 +4452,7 @@ body,#appShell{background-color:transparent!important;background-image:none!impo
   transform:rotate(-.12deg);
 }
 #welcomePage .wl-panel::before{
-  content:"BITS & BOBS · MR ELEC";
+  content:"BITS & BOBS Komi♡";
   position:absolute;
   top:-22px;left:50%;
   transform:translateX(-50%) rotate(-1deg);
@@ -4650,4 +4651,254 @@ html.streamlit-embed .side .side-foot {
   html.streamlit-embed .side { height: auto; }
   html.streamlit-embed .side .side-nav { flex: 0 0 100%; overflow-x: auto; overflow-y: hidden; }
   html.streamlit-embed .side .side-foot { margin-top: 0; }
+}
+
+/* =========================================================
+   SETTINGS — Two modes; yellow settings button from first load
+========================================================= */
+.side #settingsButton,
+.side #settingsButton.active {
+  background: #FFF1B5;
+  color: #43302E;
+  border: 1px solid #E7C96E;
+  box-shadow: 2px 3px 0 rgba(67,48,46,.10);
+}
+.side #settingsButton:hover:not(:disabled) { background: #FFE69A; }
+.theme-modes { gap: 12px; }
+.theme-modes button { min-width: 110px; min-height: 44px; }
+.theme-modes button[aria-pressed="true"] {
+  background: #FFF1B5;
+  color: #43302E;
+  border-color: #852936;
+  box-shadow: 0 0 0 2px #852936;
+}
+#weatherIcon { color: #E7C96E; }
+#welcomePage #weatherStatus { font-size: 10px; margin-top: 3px; }
+
+/* =========================================================
+   MOBILE — Account controls occupy their own space, never overlap
+========================================================= */
+@media (max-width: 860px) {
+  .side { width: 100%; min-width: 0; }
+  .side-top { flex: 1 1 0; min-width: 0; }
+  .side-top .brand { min-width: 0; font-size: 16px; }
+  .side .side-foot {
+    position: static;
+    flex: 0 0 auto;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    width: auto;
+    gap: 8px !important;
+    margin: 0;
+    padding: 0;
+  }
+  .side .side-foot button { min-width: 38px; min-height: 38px; transform: none; }
+  .side .side-nav { min-width: 0; max-width: 100%; flex: 0 0 100%; }
+  .side .guest-account-prompt { order: 4; flex: 0 0 100%; }
+  #welcomePage .wl-account {
+    position: relative;
+    inset: auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    width: fit-content;
+    max-width: calc(100% - 28px);
+    margin: 12px 14px 0 auto;
+    transform: none;
+    gap: 8px;
+  }
+  #welcomePage .wl-account > span:not(.welcome-account-avatar) { flex: 1 1 80px; min-width: 0; }
+  #welcomePage .wl-account b { overflow-wrap: anywhere; }
+  #welcomePage .wl-account button {
+    flex: 0 0 auto;
+    width: auto;
+    min-width: max-content;
+    height: auto;
+    min-height: 38px;
+    padding: 7px 12px;
+    white-space: nowrap;
+    line-height: 1.4;
+    transform: none;
+  }
+  #welcomePage:has(.wl-account:not([hidden])) .wl-main { padding-top: 32px; }
+}
+
+/* =========================================================
+   READABLE TEXT — Foregrounds belong to the surface they sit on
+   Dark pages use light text; pastel artwork and buttons use dark ink.
+========================================================= */
+:root {
+  --reading-text: #43302E;
+  --reading-heading: #852936;
+  --reading-muted: #59423E;
+  --reading-positive: #246348;
+  --reading-surface: #FAF7EA;
+  --reading-field: #FFFDF7;
+  --paper-ink: #43302E;
+  --paper-muted: #59423E;
+}
+:root[data-theme="dark"] {
+  --reading-text: #F9EEE8;
+  --reading-heading: #E1AEBC;
+  --reading-muted: #D1BDB6;
+  --reading-positive: #A2D9BC;
+  --reading-surface: #302829;
+  --reading-field: #241F20;
+}
+
+/* Page titles used to share the white primary-button text token. */
+.settings-page-head h1,
+.friends-room-label span,
+.usage-social-divider span,
+.monthly-change-link {
+  color: var(--reading-heading);
+}
+:root[data-theme="light"] :is(.note,.k,.dash-kpi-label,.dash-kpi-sub) {
+  color: var(--reading-muted);
+}
+:root[data-theme="light"] #kpi :is(.dash-kpi-label,.dash-kpi-sub) {
+  color: var(--reading-muted);
+}
+:root[data-theme="light"] #welcomePage :is(.wl-mini small,.wl-card small) {
+  color: var(--paper-muted);
+}
+.side .side-user-copy :is(small,b,#accountName),
+.side .side-home-arrow {
+  color: var(--reading-text) !important;
+}
+.guest-account-prompt small { color: var(--reading-muted); }
+
+/* Artwork and pastel controls retain their own dark foreground in both modes. */
+.chip2, .chip2 :is(b,small) { color: var(--reading-text) !important; }
+.chip2 small { opacity: 1; }
+.welcome-account-avatar, .auth-modal-brand > span,
+.settings-page-head > div > span, .dash-ai-avatar {
+  color: var(--paper-ink) !important;
+}
+#welcomePage .wl-house small,
+#welcomePage .wl-home-head small,
+#welcomePage .wl-home-foot small {
+  color: var(--paper-muted) !important;
+}
+#welcomePage .wl-mini .dn {
+  color: #246348;
+}
+
+/* =========================================================
+   DARK MODE — Main pages, data panels and form fields
+========================================================= */
+:root[data-theme="dark"],
+:root[data-theme="dark"] :is(#p0,#p1,#p2,#p3,#p4,#p5,#p6) {
+  --bg: #211C1C; --card: #302829; --paper: #302829; --field: #241F20;
+  --tx: #F9EEE8; --ink: #F9EEE8; --ink-soft: #F9EEE8; --mu: #D1BDB6;
+  --muted: #D1BDB6; --muted2: #BBA5A0; --bd: #806666; --line: #806666;
+  --pr: #852936; --prt: #FFFDF7; --prh: #6F202C; --hl: #E1AEBC;
+  --ink-rose: #E1AEBC; --base: #211C1C; --base-deep: #302829;
+  --t1: #293740; --t2: #3C3529; --t3: #422D35; --t4: #352D2C;
+  --gr: #A2D9BC;
+}
+:root[data-theme="dark"] body,
+:root[data-theme="dark"] #appShell,
+:root[data-theme="dark"] #appShell .main,
+:root[data-theme="dark"] #welcomePage.wl {
+  background: #211C1C !important;
+  color: var(--reading-text);
+}
+:root[data-theme="dark"] .side {
+  background: #302829;
+  border-color: #806666;
+}
+/* Include the app ID so these rules beat earlier fixed pastel card rules. */
+:root[data-theme="dark"] #appShell :is(.card,.dash-kpi,.friends-room-label,.side-user,.side-home-card,.selbar,.pi,.pattern-metric),
+:root[data-theme="dark"] #welcomePage :is(.wl-panel,.wl-card,.wl-mini,.wl-account) {
+  background: var(--reading-surface) !important;
+  color: var(--reading-text) !important;
+  border-color: #806666 !important;
+}
+:root[data-theme="dark"] :is(h1,h2,h3,.brand,.dash-title,.side-home-owner) {
+  color: var(--reading-heading);
+}
+:root[data-theme="dark"] :is(.note,.k,small),
+:root[data-theme="dark"] #appShell .bill-grid-head {
+  color: var(--reading-muted);
+}
+:root[data-theme="dark"] :is(input,select,textarea,button.g,.tab) {
+  background: var(--reading-field);
+  color: var(--reading-text);
+  border-color: #806666;
+}
+:root[data-theme="dark"] :is(input,textarea)::placeholder {
+  color: var(--reading-muted);
+  opacity: 1;
+}
+:root[data-theme="dark"] #appShell .bill-delete-btn {
+  color: var(--reading-text) !important;
+}
+:root[data-theme="dark"] #appShell .bill-delete-btn:hover {
+  color: var(--paper-ink) !important;
+}
+:root[data-theme="dark"] #p2 .forecast-chart text {
+  fill: var(--reading-text);
+}
+:root[data-theme="dark"] #kpi .dash-kpi::after { opacity: .12; }
+:root[data-theme="dark"] #kpi .dash-kpi-ico { color: var(--paper-ink); }
+:root[data-theme="dark"] .tip {
+  background: #3C3529;
+  color: var(--reading-text);
+  border-color: #806666;
+}
+:root[data-theme="dark"] .tip[style*="--second1-soft"],
+:root[data-theme="dark"] .tip[style*="--second2-soft"] {
+  color: var(--paper-ink);
+}
+:root[data-theme="dark"] .theme-modes button[aria-pressed="true"],
+:root[data-theme="dark"] .tab.on {
+  background: #FFF1B5;
+  color: var(--paper-ink);
+  border-color: #E1AEBC;
+}
+:root[data-theme="dark"] .theme-modes button[aria-pressed="true"] {
+  box-shadow: 0 0 0 2px #E1AEBC;
+}
+/* Menu buttons keep their pastel backgrounds. Their text must stay dark. */
+:root[data-theme="dark"] .side .side-nav button {
+  color: var(--paper-ink) !important;
+}
+:root[data-theme="dark"] #appShell :is(.pattern-head,.chart-info,.pattern-row:nth-child(even)) {
+  background: #352D2C;
+  color: var(--reading-text);
+}
+:root[data-theme="dark"] #appShell :is(.pattern-row:hover,.pattern-row.selected) {
+  background: #422D35;
+  color: var(--reading-text);
+}
+
+/* Welcome: information cards are dark; the illustrated house stays pastel. */
+:root[data-theme="dark"] #welcomePage :is(.wl-mini b,.wl-card b,.wl-panel h2,.wl-account b) {
+  color: var(--reading-text);
+}
+:root[data-theme="dark"] #welcomePage :is(.wl-mini small,.wl-card small,.wl-panel-head span,.wl-panel-head p) {
+  color: var(--reading-muted);
+}
+:root[data-theme="dark"] #welcomePage .wl-account button {
+  background: #852936;
+  color: #FFFDF7;
+}
+
+/* Login/register use the same readable surface and button pairings. */
+:root[data-theme="dark"] #authModal :is(.auth-modal-brand b,label) {
+  color: var(--reading-text);
+}
+:root[data-theme="dark"] #authModal .auth-modal-close {
+  background: var(--reading-field);
+  color: var(--reading-text);
+}
+:root[data-theme="dark"] #authModal .auth-modal-tabs button:not(.g),
+:root[data-theme="dark"] #welcomeAuthSubmit {
+  background: #852936;
+  color: #FFFDF7;
+}
+.shd {
+  background: var(--reading-surface);
+  color: var(--reading-text);
 }

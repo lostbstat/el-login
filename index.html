@@ -1,7 +1,14 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="utf-8">
+<html lang="en" data-theme="light"><head><meta charset="utf-8">
+<script>
+  // Restore only the two supported modes before painting the page.
+  try {
+    const saved = JSON.parse(localStorage.getItem('thm') || 'null');
+    document.documentElement.dataset.theme = saved?.m === 'dark' ? 'dark' : 'light';
+  } catch (error) { /* Light is the default when storage is unavailable. */ }
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>he kuy</title>
+<title>Komi♡</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;700&family=Mali:wght@600;700&family=Noto+Sans+Thai:wght@400;500;600;700;800&display=swap">
 <link rel="stylesheet" href="style.css">
 
@@ -36,7 +43,7 @@
         <svg class="wl-heart" viewBox="0 0 46 42" aria-hidden="true"><path d="M23 39C6 26 2 17 2 11a9 9 0 0 1 16-5l5 5 5-5a9 9 0 0 1 16 5c0 6-4 15-21 28Z" fill="url(#wlh)" stroke="var(--primal2-mid)" stroke-width="2" stroke-linejoin="round"/><ellipse cx="12" cy="11" rx="4" ry="2.6" fill="#fff" opacity=".75" transform="rotate(-30 12 11)"/></svg>
         <div class="wl-brand">
         <svg viewBox="0 0 40 40" width="40" height="40" fill="none" stroke="var(--primal2)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20 20 6l15 14M9 17v17h22V17"/><path d="M17 34v-9h6v9"/><path d="M26 8v-4h4v8" /></svg>
-        <span><b>Komi</b><small>Electricity AI Assistant</small></span>
+        <span><b>Komi♡</b><small>Electricity AI Assistant</small></span>
       </div><svg class="wl-rstar r1" viewBox="-34 -34 68 68" aria-hidden="true"><path d="M0-26 7-9 26-6 12 6 16 25 0 15-16 25-12 6-26-6-7-9Z" fill="var(--second1)" stroke="var(--second1)" stroke-width="9" stroke-linejoin="round"/></svg><svg class="wl-rstar r2" viewBox="-34 -34 68 68" aria-hidden="true"><path d="M0-26 7-9 26-6 12 6 16 25 0 15-16 25-12 6-26-6-7-9Z" fill="var(--second2-mid)" stroke="var(--second2-mid)" stroke-width="9" stroke-linejoin="round"/></svg><svg class="wl-rstar r3" viewBox="-34 -34 68 68" aria-hidden="true"><path d="M0-26 7-9 26-6 12 6 16 25 0 15-16 25-12 6-26-6-7-9Z" fill="var(--second1)" stroke="var(--second1)" stroke-width="9" stroke-linejoin="round"/></svg><svg class="wl-rstar r4" viewBox="-34 -34 68 68" aria-hidden="true"><path d="M0-26 7-9 26-6 12 6 16 25 0 15-16 25-12 6-26-6-7-9Z" fill="var(--base-deep)" stroke="var(--base-deep)" stroke-width="9" stroke-linejoin="round"/></svg>
       </div>
       <div class="wl-hb">
@@ -69,7 +76,10 @@
     </div>
 
     <aside class="wl-side" aria-label="สรุปวันนี้">
-      <div class="wl-mini"><svg viewBox="0 0 48 48" width="42" height="42"><circle cx="24" cy="24" r="10" fill="var(--second1-deep)"/><g stroke="var(--second1-deep)" stroke-width="3" stroke-linecap="round"><path d="M24 3v6M24 39v6M3 24h6M39 24h6M9 9l4 4M35 35l4 4M9 39l4-4M35 13l4-4"/></g></svg><div><b>32°C</b><small>กรุงเทพมหานคร<br>15 ส.ค. 2568</small></div></div>
+      <div class="wl-mini" id="weatherCard" aria-label="สภาพอากาศกรุงเทพมหานคร">
+        <svg id="weatherIcon" viewBox="0 0 48 48" width="42" height="42" aria-hidden="true"></svg>
+        <div><b id="weatherTemperature">—°C</b><small>กรุงเทพมหานคร<br><span id="weatherDate"></span></small><small id="weatherStatus">กำลังโหลดอากาศ…</small></div>
+      </div>
       <div class="wl-mini col"><svg viewBox="0 0 48 48" width="40" height="40"><rect x="3" y="26" width="10" height="19" rx="3" fill="var(--second2-deep)"/><rect x="18" y="16" width="10" height="29" rx="3" fill="var(--ok)"/><rect x="33" y="5" width="10" height="40" rx="3" fill="var(--ok)"/></svg><div><small>ค่าไฟเดือนนี้</small><b>1,284 บาท</b><span class="dn">↓ 12%</span><small>จากเดือนก่อน</small></div></div>
       <div class="wl-mini col"><svg viewBox="0 0 48 48" width="44" height="44"><circle cx="24" cy="24" r="22" fill="var(--second2-deep)"/><path d="M26 8 14 27h9l-2 13 13-20h-9z" fill="#fff"/></svg><div><small>หน่วยไฟเดือนนี้</small><b>324 kWh</b><span class="dn">↓ 8%</span><small>จากเดือนก่อน</small></div></div>
     </aside>
@@ -153,7 +163,7 @@
 <div id="appShell" hidden>
 <aside class="side">
   <div class="side-top">
-    <b class="brand">MR. ELEC</b>
+    <b class="brand">Komi♡</b>
 </div>
 
   <div class="side-user side-home-card" onclick="openEditableHome()" role="button" tabindex="0"
@@ -235,7 +245,7 @@
 <div id="homeSocialContent" hidden>
 <div class="usage-social-divider">
   <div>
-    <span>📊 การเปรียบเทียบการใช้ไฟ</span>
+    <span>การเปรียบเทียบการใช้ไฟ</span>
     <small>ดูอันดับ การตั้งค่าความเป็นส่วนตัว และเปรียบเทียบการใช้ไฟกับเพื่อน</small>
   </div>
 </div>
@@ -243,12 +253,11 @@
 
 
 <div class="card"><h2 data-i="so_t"></h2><div class="note" data-i="so_n"></div>
-<div class="row"><span data-i="so_v"></span><select id="mvis" onchange="ME.vis=this.value;soc()"><option value="all" data-i="so_va"></option><option value="friends" data-i="so_vf"></option><option value="none" data-i="so_vn"></option></select><span data-i="so_pp"></span><input type="number" min="1" value="1" style="width:64px" oninput="ME.pp=Math.max(1,+this.value||1);soc()"></div>
+<div class="row"><span data-i="so_v"></span><select id="mvis" onchange="ME.vis=this.value;soc()"><option value="all" data-i="so_va"></option><option value="friends" data-i="so_vf"></option><option value="none" data-i="so_vn"></option></select><span data-i="so_pp"></span><input type="number" min="1" value="1" style="width:64px" oninput="ME.pp=Math.max(1,+this.value||1);soc()"><span>คน</span></div>
 <div class="row"><label><input type="checkbox" checked style="width:auto" onchange="ME.rk=+this.checked;soc()"> <span data-i="so_rk"></span></label></div>
 <div class="row"><label><input type="checkbox" checked style="width:auto" onchange="ME.det=+this.checked;soc()"> <span data-i="so_det"></span></label></div></div>
 <div class="card"><div class="row" style="justify-content:space-between;margin-top:0"><h2 style="margin:0" data-i="so_rt"></h2><select id="rmet" onchange="soc()"><option value="sv" data-i="so_m1"></option><option value="pp" data-i="so_m2"></option><option value="kw" data-i="so_m3"></option></select></div><div id="rk"></div></div>
 <div class="card"><h2 data-i="so_vt"></h2><div id="vl"></div><div id="vw" hidden><svg id="vroom" viewBox="0 0 400 260" style="display:block;width:100%;max-width:640px;margin:8px auto;touch-action:none"></svg><div id="vd"></div><button class="g" onclick="$('vw').hidden=true" data-i="so_back"></button></div></div>
-</div>
 </section>
 
 <section id="p5" hidden>
@@ -263,7 +272,11 @@
 </div>
 
 <div class="card settings-theme-card" id="thm">
-  <h2 data-i="tk"></h2><div class="row"><input type="color" id="pick" value="#A5BAE7" aria-label="color"><div id="sws" class="row" style="margin:0;gap:8px"></div></div><div class="note" data-i="tp"></div><div class="row"><button class="g" data-m="auto" data-i="ta"></button><button class="g" data-m="light" data-i="tl"></button><button class="g" data-m="dark" data-i="td"></button><button class="g" id="trs" data-i="tkr" style="margin-left:auto"></button></div>
+  <h2 data-i="tk"></h2>
+  <div class="row theme-modes" role="group" aria-label="สีธีม">
+    <button type="button" class="g" data-m="light" data-i="tl" aria-pressed="true"></button>
+    <button type="button" class="g" data-m="dark" data-i="td" aria-pressed="false"></button>
+  </div>
 </div>
 
 <div class="card"><h2 data-i="set"></h2><div class="row"><span data-i="lang"></span><select id="lang" style="width:auto"></select><span data-i="cur"></span><input id="cur" value="฿" style="width:70px"></div><div id="tst" class="note"></div></div>
@@ -369,7 +382,7 @@
 
   <div class="ai-energy-analysis">
     <div class="card ai-energy-heading">
-      <h2>⚡ วิเคราะห์การใช้ไฟจากเครื่องใช้ไฟฟ้า</h2>
+      <h2>วิเคราะห์การใช้ไฟจากเครื่องใช้ไฟฟ้า</h2>
       <div class="note">สรุปการใช้ไฟต่อวัน ต่อเดือน สัดส่วนแต่ละเครื่อง และเปรียบเทียบกับบิลจริง</div>
     </div>
     <div id="es"></div>
@@ -399,4 +412,4 @@
 </main>
 </div>
 <div id="shm" class="shm" hidden onclick="if(event.target===this)shopClose()"><div class="shd" role="dialog" aria-modal="true"><button class="shx g" onclick="shopClose()" aria-label="close">✕</button><div id="shh"></div><div class="tabs" id="sht"></div><div id="shl" class="shg"></div></div></div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script><script src="bridge.js"></script><script src="script.js"></script><script src="butterflies.js" defer></script></body></html>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script><script src="bridge.js"></script><script src="script.js"></script><script src="weather.js" defer></script><script src="butterflies.js" defer></script></body></html>
