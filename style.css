@@ -3923,7 +3923,7 @@ input[type=file]::file-selector-button{
   transform:rotate(-.25deg);
 }
 .auth-card::after{
-  content:"MR ELEC ♡";
+  content:" Komi ♡";
   position:absolute;
   top:-25px;
   left:28px;
