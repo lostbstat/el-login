@@ -1,10 +1,11 @@
-.streamlit/secrets.toml
 .env
 .env.*
-__pycache__/
-*.pyc
-.venv/
-venv/
-node_modules/
+!.env.example
+.streamlit/secrets.toml
 accounts.db
 accounts.db-*
+sessions.db
+sessions.db-*
+__pycache__/
+*.py[cod]
+.venv/
