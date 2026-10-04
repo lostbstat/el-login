@@ -433,6 +433,7 @@ function go(n){
 
   const main = document.querySelector('.main');
   if (main) main.scrollTop = 0;
+  window.StreamlitBridge?.resetViewport?.();
 
   if(n==0){pl();if(accountUser)soc()}
   if(n==1) est();

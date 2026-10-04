@@ -4624,7 +4624,9 @@ html.streamlit-embed #appShell {
 }
 html.streamlit-embed .main {
   height: 100%; min-height: 0; overflow-y: auto; overflow-x: hidden;
-  overscroll-behavior: contain; padding-bottom: 24px;
+  overscroll-behavior: contain; padding-bottom: 48px;
+  scroll-padding-block: 24px 48px;
+  scrollbar-gutter: stable;
 }
 html.streamlit-embed .side {
   position: relative; top: 0; height: 100%; min-height: 0; overflow: hidden;

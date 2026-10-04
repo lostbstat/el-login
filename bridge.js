@@ -35,14 +35,41 @@
     return;
   }
   document.documentElement.classList.add('streamlit-embed');
+  let hostScroller = null, hostOverflow = '', hostScrollBehavior = '';
+  function syncHostScroll() {
+    try {
+      const frame = window.frameElement;
+      const main = frame?.closest?.('[data-testid="stMain"]');
+      const shell = document.getElementById('appShell');
+      const appOpen = shell && !shell.hidden;
+      if (main && appOpen) {
+        if (!hostScroller) {
+          hostScroller = main;
+          hostOverflow = main.style.overflowY;
+          hostScrollBehavior = main.style.scrollBehavior;
+        }
+        main.style.overflowY = 'hidden';
+        main.style.scrollBehavior = 'auto';
+        main.scrollTop = 0;
+      } else if (hostScroller) {
+        hostScroller.style.overflowY = hostOverflow;
+        hostScroller.style.scrollBehavior = hostScrollBehavior;
+        hostScroller.scrollTop = 0;
+        hostScroller = null;
+      }
+    } catch (error) { /* Cross-origin hosts manage their own scrolling. */ }
+  }
   function updateHostViewport() {
+    // Reset the host before measuring: its previous scroll offset can put the
+    // iframe above the screen and incorrectly make the app taller than the space.
+    syncHostScroll();
     let hostHeight = 0, top = 108;
     try {
       hostHeight = window.parent.innerHeight;
       if (window.frameElement) top = Math.max(0, window.frameElement.getBoundingClientRect().top);
     } catch (error) { /* Cross-origin hosts use the screen fallback. */ }
     if (!(hostHeight > 0)) hostHeight = window.screen?.availHeight || 800;
-    document.documentElement.style.setProperty('--streamlit-viewport-height', `${Math.max(240, Math.floor(hostHeight - top - 12))}px`);
+    document.documentElement.style.setProperty('--streamlit-viewport-height', `${Math.max(1, Math.floor(hostHeight - top - 20))}px`);
   }
   updateHostViewport();
   window.addEventListener('resize', updateHostViewport);
@@ -74,7 +101,7 @@
     if (resizeFrame !== null) return;
     resizeFrame = requestAnimationFrame(() => {
       resizeFrame = null;
-      const height = Math.max(300, Math.ceil(document.body.getBoundingClientRect().height) + 12);
+      const height = Math.max(1, Math.ceil(document.body.getBoundingClientRect().height) + 12);
       if (height !== lastHeight) { lastHeight = height; send('streamlit:setFrameHeight', { height }); }
     });
   }
@@ -134,6 +161,11 @@
   });
   window.StreamlitBridge = {
     ready,
+    resetViewport() {
+      window.scrollTo(0, 0);
+      updateHostViewport();
+      requestAnimationFrame(() => { updateHostViewport(); resize(); });
+    },
     request(payload, signal) {
       return new Promise((resolve, reject) => {
         if (signal?.aborted) return reject(new DOMException('Aborted', 'AbortError'));
@@ -149,6 +181,11 @@
       });
     }
   };
+  // Welcome buttons may scroll their Streamlit ancestor into view before they
+  // hide. Recalculate again after the browser finishes that layout change.
+  new MutationObserver(() => window.StreamlitBridge.resetViewport()).observe(document.getElementById('appShell') || document.body, {
+    attributes: true, attributeFilter: ['hidden'], subtree: true
+  });
   new ResizeObserver(resize).observe(document.body);
   window.addEventListener('load', resize);
   send('streamlit:componentReady', { apiVersion: 1 });
