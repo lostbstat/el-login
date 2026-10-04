@@ -1,6 +1,19 @@
 /* Streamlit Components v1 JSON protocol. No API key enters this file.
    Reference: https://docs.streamlit.io/develop/concepts/custom-components/components-v1/intro */
 (() => {
+  // Disable zoom gestures inside the app while retaining ordinary scrolling.
+  window.addEventListener('wheel', event => {
+    if (event.ctrlKey || event.metaKey) event.preventDefault();
+  }, { passive: false });
+  window.addEventListener('keydown', event => {
+    if ((event.ctrlKey || event.metaKey) && ['+', '-', '=', '0', '_'].includes(event.key)) event.preventDefault();
+  });
+  window.addEventListener('touchmove', event => {
+    if (event.touches.length > 1) event.preventDefault();
+  }, { passive: false });
+  for (const name of ['gesturestart', 'gesturechange']) {
+    window.addEventListener(name, event => event.preventDefault(), { passive: false });
+  }
   // Direct Python server: HTTP endpoints. Streamlit iframe: component messages.
   if (window.parent === window || !/\/component\//.test(window.location.pathname)) {
     const ready = fetch('/api/config').then(async response => {
@@ -21,20 +34,38 @@
     };
     return;
   }
-  // Scope iframe layout fixes to Streamlit; the local Python app keeps its layout.
-  document.documentElement.classList.add("streamlit-embed");
-  // The component's own viewport grows whenever Streamlit applies our height.
-  // Use the host viewport instead, so full-height layouts stay a stable size.
+  document.documentElement.classList.add('streamlit-embed');
   function updateHostViewport() {
-    let hostHeight = 0;
-    try { hostHeight = window.parent.innerHeight; } catch (e) {}
+    let hostHeight = 0, top = 108;
+    try {
+      hostHeight = window.parent.innerHeight;
+      if (window.frameElement) top = Math.max(0, window.frameElement.getBoundingClientRect().top);
+    } catch (error) { /* Cross-origin hosts use the screen fallback. */ }
     if (!(hostHeight > 0)) hostHeight = window.screen?.availHeight || 800;
-    const visibleHeight = Math.max(240, Math.round(hostHeight) - 120);
-    document.documentElement.style.setProperty("--streamlit-viewport-height", visibleHeight + "px");
+    document.documentElement.style.setProperty('--streamlit-viewport-height', `${Math.max(240, Math.floor(hostHeight - top - 12))}px`);
   }
   updateHostViewport();
-  window.addEventListener("resize", updateHostViewport);
-  let config = null, active = null, counter = 0, readyResolve;
+  window.addEventListener('resize', updateHostViewport);
+  try { window.parent.addEventListener('resize', updateHostViewport); } catch (error) { /* Cross-origin iframe. */ }
+
+  const storageKey = 'electricity.remembered-session.v1';
+  function readSession() {
+    try {
+      const value = JSON.parse(localStorage.getItem(storageKey) || 'null');
+      if (value && typeof value.ticket === 'string' && value.ticket.length <= 256 && value.expiresAt > Date.now()) return value;
+      localStorage.removeItem(storageKey);
+    } catch (error) { /* Storage can be disabled by the browser. */ }
+    return null;
+  }
+  let remembered = readSession();
+  function remember(value) {
+    remembered = value || null;
+    try {
+      if (remembered) localStorage.setItem(storageKey, JSON.stringify(remembered));
+      else localStorage.removeItem(storageKey);
+    } catch (error) { /* Login still works without persistent storage. */ }
+  }
+  let config = null, active = null, counter = 0, readyResolve, initialized = false;
   const ready = new Promise(resolve => { readyResolve = resolve; });
   const queue = [];
   let lastHeight = 0, resizeFrame = null;
@@ -69,12 +100,31 @@
   window.addEventListener('message', event => {
     if (event.source !== window.parent || event.data?.type !== 'streamlit:render') return;
     const args = event.data.args || {};
-    if (args.config) { config = args.config; readyResolve(config); }
+    if (args.config) {
+      config = args.config;
+      if (!initialized) {
+        initialized = true;
+        if (config.auth?.user) {
+          remember(config.auth.rememberedSession);
+          readyResolve(config);
+        } else if (remembered && config.auth?.enabled) {
+          window.StreamlitBridge.request({ action: 'auth.status' }).then(result => {
+            config = { ...config, auth: { ...config.auth, user: result.user } };
+          }).catch(error => {
+            if (['unauthorized', 'invalid_credentials'].includes(error.code)) remember(null);
+          }).finally(() => readyResolve(config));
+        } else readyResolve(config);
+      }
+    }
     const response = args.response;
     if (active && response?.id === active.id) {
       const item = active; active = null; cleanup(item);
       if (!item.cancelled) {
-        if (response.ok) item.resolve(response.result || { text: response.text });
+        if (response.ok) {
+          const result = response.result || { text: response.text };
+          if (Object.prototype.hasOwnProperty.call(result, 'rememberedSession')) remember(result.rememberedSession);
+          item.resolve(result);
+        }
         else { const error = new Error(response.error || 'Gemini API error'); error.code = response.code; item.reject(error); }
       }
       // Remove credentials from the component widget value after acknowledgement.
@@ -88,7 +138,7 @@
       return new Promise((resolve, reject) => {
         if (signal?.aborted) return reject(new DOMException('Aborted', 'AbortError'));
         if (queue.length >= 8) return reject(new Error('มีคำขอรออยู่หลายรายการ กรุณารอสักครู่'));
-        const item = { id: `${Date.now()}-${++counter}`, payload, signal, resolve, reject, cancelled: false };
+        const item = { id: `${Date.now()}-${++counter}`, payload: { ...payload, ...(remembered ? { _session: remembered.ticket } : {}) }, signal, resolve, reject, cancelled: false };
         item.abort = () => {
           item.cancelled = true; cleanup(item); reject(new DOMException('Aborted', 'AbortError'));
           // Sent calls may still finish on Python; ignore their response after Stop.

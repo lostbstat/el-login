@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import hashlib
 import hmac
+import json
 import re
 import secrets
 import sqlite3
@@ -15,7 +16,7 @@ import requests
 from firebase_auth import FirebaseAuth, FirebaseAuthError
 
 ITERATIONS = 600_000
-SESSION_SECONDS = 12 * 60 * 60
+SESSION_SECONDS = 30 * 24 * 60 * 60
 
 
 class AuthError(Exception):
@@ -39,6 +40,14 @@ class AuthService:
         if self.mode == "supabase" and (urlsplit(self.url).scheme != "https" or not urlsplit(self.url).hostname):
             self.mode = "unconfigured"
         self.db = Path(directory) / "accounts.db"
+        self.session_db = Path(directory) / "sessions.db"
+        self.provider_id = hashlib.sha256((self.mode + self.url + self.key + self.firebase.api_key).encode()).hexdigest()
+        with sqlite3.connect(self.session_db) as conn:
+            conn.execute("""CREATE TABLE IF NOT EXISTS sessions (
+                ticket_hash TEXT PRIMARY KEY, provider TEXT NOT NULL,
+                user TEXT NOT NULL, remote TEXT, expires REAL NOT NULL)""")
+            conn.execute("DELETE FROM sessions WHERE expires <= ?", (time.time(),))
+        self.session_db.chmod(0o600)
         if self.mode == "sqlite":
             with sqlite3.connect(self.db) as conn:
                 conn.execute("""CREATE TABLE IF NOT EXISTS accounts (
@@ -148,17 +157,55 @@ class AuthService:
             for key in list(self.sessions):
                 if self.sessions[key]["expires"] <= now:
                     del self.sessions[key]
-            self.sessions[hashlib.sha256(ticket.encode()).hexdigest()] = {
+            key = hashlib.sha256(ticket.encode()).hexdigest()
+            session = {
                 "user": user, "expires": now + SESSION_SECONDS,
                 "remote": remote, "lock": threading.RLock()}
+            with sqlite3.connect(self.session_db) as conn:
+                conn.execute("DELETE FROM sessions WHERE expires <= ?", (now,))
+                conn.execute("INSERT INTO sessions VALUES (?, ?, ?, ?, ?)",
+                             (key, self.provider_id, json.dumps(user), json.dumps(remote), session["expires"]))
+            self.sessions[key] = session
         return ticket
 
-    def user(self, ticket, *, verify=False):
-        if not isinstance(ticket, str) or not ticket:
+    def session(self, ticket):
+        if not isinstance(ticket, str) or not 1 <= len(ticket) <= 256:
             return None
-        with self.lock:
-            session = self.sessions.get(hashlib.sha256(ticket.encode()).hexdigest())
-        if not session or session["expires"] <= time.time():
+        key = hashlib.sha256(ticket.encode()).hexdigest()
+        with self.lock, sqlite3.connect(self.session_db) as conn:
+            row = conn.execute("SELECT user, remote, expires FROM sessions WHERE ticket_hash = ? AND provider = ? AND expires > ?",
+                               (key, self.provider_id, time.time())).fetchone()
+            if not row:
+                self.sessions.pop(key, None)
+                return None
+            if key not in self.sessions:
+                self.sessions[key] = {"user": json.loads(row[0]), "remote": json.loads(row[1]),
+                                      "expires": row[2], "lock": threading.RLock()}
+            return self.sessions[key]
+
+    def forget_session(self, ticket):
+        key = hashlib.sha256(ticket.encode()).hexdigest()
+        with self.lock, sqlite3.connect(self.session_db) as conn:
+            session = self.sessions.pop(key, None)
+            conn.execute("DELETE FROM sessions WHERE ticket_hash = ?", (key,))
+        return session
+
+    def save_session(self, ticket, session):
+        # UPDATE cannot recreate a ticket that another tab has already revoked.
+        with self.lock, sqlite3.connect(self.session_db) as conn:
+            changed = conn.execute("UPDATE sessions SET user = ?, remote = ? WHERE ticket_hash = ? AND provider = ? AND expires > ?",
+                                   (json.dumps(session["user"]), json.dumps(session["remote"]),
+                                    hashlib.sha256(ticket.encode()).hexdigest(), self.provider_id, time.time())).rowcount
+        if not changed:
+            raise AuthError("เซสชันถูกยกเลิก กรุณาเข้าสู่ระบบใหม่", "unauthorized", 401)
+
+    def remembered_session(self, ticket):
+        session = self.session(ticket)
+        return {"ticket": ticket, "expiresAt": int(session["expires"] * 1000)} if session else None
+
+    def user(self, ticket, *, verify=False):
+        session = self.session(ticket)
+        if not session:
             return None
         if self.mode == "firebase" and verify:
             with session["lock"]:
@@ -170,19 +217,25 @@ class AuthService:
                     value = self.firebase_call("lookup_user", data["access_token"])
                     self.check_firebase_user(value, data, session["user"]["id"])
                     session["user"] = self.firebase_user(value)
+                    self.save_session(ticket, session)
                 except AuthError as exc:
                     if exc.status == 401:
-                        with self.lock:
-                            self.sessions.pop(hashlib.sha256(ticket.encode()).hexdigest(), None)
+                        self.forget_session(ticket)
                     raise
         if self.mode == "supabase" and verify:
             with session["lock"]:
-                data = session["remote"]
-                if data["expires_at"] <= time.time() + 30:
-                    refreshed = self.remote("POST", "token?grant_type=refresh_token", {"refresh_token": data["refresh_token"]})
-                    data.update(self.token_data(refreshed))
-                value = self.remote("GET", "user", access=data["access_token"])
-                session["user"] = self.public_user(value)
+                try:
+                    data = session["remote"]
+                    if data["expires_at"] <= time.time() + 30:
+                        refreshed = self.remote("POST", "token?grant_type=refresh_token", {"refresh_token": data["refresh_token"]})
+                        data.update(self.token_data(refreshed))
+                    value = self.remote("GET", "user", access=data["access_token"])
+                    session["user"] = self.public_user(value)
+                    self.save_session(ticket, session)
+                except AuthError as exc:
+                    if exc.status == 401:
+                        self.forget_session(ticket)
+                    raise
         return session["user"]
 
     @staticmethod
@@ -202,10 +255,11 @@ class AuthService:
         self.check_config()
         action = payload.get("action")
         if action == "auth.status":
-            return {"user": self.user(ticket, verify=True)}, ticket
+            user = self.user(ticket, verify=True)
+            return {"user": user}, ticket if user else ""
         if action == "auth.logout":
-            with self.lock:
-                session = self.sessions.pop(hashlib.sha256(ticket.encode()).hexdigest(), None)
+            session = self.session(ticket)
+            self.forget_session(ticket)
             if session and self.mode == "supabase":
                 try:
                     self.remote("POST", "logout?scope=local", access=session["remote"]["access_token"])
@@ -247,6 +301,5 @@ class AuthService:
                     raise AuthError("อีเมลหรือรหัสผ่านไม่ถูกต้อง", "invalid_credentials", 401)
                 user = {"id": row["id"], "email": row["email"], "name": row["name"]}
         # Rotate an existing session when signing in as a different account.
-        with self.lock:
-            self.sessions.pop(hashlib.sha256(ticket.encode()).hexdigest(), None)
+        self.forget_session(ticket)
         return {"user": user, "message": "สมัครสำเร็จ" if registering else "เข้าสู่ระบบแล้ว"}, self.new_session(user, remote)

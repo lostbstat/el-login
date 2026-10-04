@@ -431,6 +431,9 @@ function go(n){
 
   scrollTo(0,0);
 
+  const main = document.querySelector('.main');
+  if (main) main.scrollTop = 0;
+
   if(n==0){pl();if(accountUser)soc()}
   if(n==1) est();
   if(n==2) dash();

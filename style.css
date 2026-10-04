@@ -4607,15 +4607,45 @@ body,#appShell{background-color:transparent!important;background-image:none!impo
   .side.nav-auto-collapse .side-home-arrow{display:none!important}
 }
 
-
-/* Streamlit iframe: keep the login dialog near the top of the visible page.
-   A 100vh welcome page grows with the iframe after each height update. */
-html.streamlit-embed #welcomePage {
+/* Streamlit uses a measured host height; iframe vh would continually grow. */
+html.streamlit-embed, html.streamlit-embed body { touch-action: pan-x pan-y; }
+html.streamlit-embed #welcomePage { min-height: 0; }
+html.streamlit-embed #authModal { align-items: start; padding-top: 24px; overflow-y: auto; }
+html.streamlit-embed .auth-modal-card { max-height: calc(var(--streamlit-viewport-height, 680px) - 48px); }
+html.streamlit-embed .auth-page { min-height: var(--streamlit-viewport-height, 680px); }
+html.streamlit-embed:has(#appShell:not([hidden])),
+html.streamlit-embed:has(#appShell:not([hidden])) body { overflow: hidden; padding: 0; }
+html.streamlit-embed #appShell {
+  grid-template-rows: minmax(0, 1fr);
+  height: var(--streamlit-viewport-height, 680px);
   min-height: 0;
+  max-height: var(--streamlit-viewport-height, 680px);
+  overflow: hidden;
 }
-
-html.streamlit-embed #authModal {
-  align-items: start;
-  padding-top: 24px;
-  overflow-y: auto;
+html.streamlit-embed .main {
+  height: 100%; min-height: 0; overflow-y: auto; overflow-x: hidden;
+  overscroll-behavior: contain; padding-bottom: 24px;
+}
+html.streamlit-embed .side {
+  position: relative; top: 0; height: 100%; min-height: 0; overflow: hidden;
+}
+html.streamlit-embed .side .side-nav {
+  flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain;
+}
+html.streamlit-embed .side-top,
+html.streamlit-embed .side-home-card,
+html.streamlit-embed .side-user,
+html.streamlit-embed .guest-account-prompt,
+html.streamlit-embed .side-foot { flex-shrink: 0; }
+html.streamlit-embed .side .side-foot {
+  display: flex; margin-top: auto; align-items: center; flex-shrink: 0;
+}
+.side-foot #logoutButton, .side-foot #nt, .side-foot #settingsButton {
+  display: flex; align-items: center; justify-content: center; flex: 0 0 auto;
+}
+@media (max-width: 860px) {
+  html.streamlit-embed #appShell { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); }
+  html.streamlit-embed .side { height: auto; }
+  html.streamlit-embed .side .side-nav { flex: 0 0 100%; overflow-x: auto; overflow-y: hidden; }
+  html.streamlit-embed .side .side-foot { margin-top: 0; }
 }
