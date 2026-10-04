@@ -23,6 +23,17 @@
   }
   // Scope iframe layout fixes to Streamlit; the local Python app keeps its layout.
   document.documentElement.classList.add("streamlit-embed");
+  // The component's own viewport grows whenever Streamlit applies our height.
+  // Use the host viewport instead, so full-height layouts stay a stable size.
+  function updateHostViewport() {
+    let hostHeight = 0;
+    try { hostHeight = window.parent.innerHeight; } catch (e) {}
+    if (!(hostHeight > 0)) hostHeight = window.screen?.availHeight || 800;
+    const visibleHeight = Math.max(240, Math.round(hostHeight) - 120);
+    document.documentElement.style.setProperty("--streamlit-viewport-height", visibleHeight + "px");
+  }
+  updateHostViewport();
+  window.addEventListener("resize", updateHostViewport);
   let config = null, active = null, counter = 0, readyResolve;
   const ready = new Promise(resolve => { readyResolve = resolve; });
   const queue = [];
