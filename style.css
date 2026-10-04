@@ -4707,8 +4707,30 @@ html.streamlit-embed .side .side-foot {
     transform: none;
     gap: 8px;
   }
-  #welcomePage .wl-account > span:not(.welcome-account-avatar) { flex: 1 1 80px; min-width: 0; }
-  #welcomePage .wl-account b { overflow-wrap: anywhere; }
+  /* Keep the signed-in badge on one compact row on phones. */
+  #welcomePage #welcomeAccountTools {
+    display: grid;
+    grid-template-columns: 30px minmax(0, 1fr) auto;
+    width: min(360px, calc(100% - 28px));
+    padding: 8px 10px;
+    border-width: 1px;
+    border-radius: 14px;
+    box-shadow: 3px 4px 0 rgba(67,48,46,.14);
+  }
+  #welcomePage #welcomeAccountTools .welcome-account-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+    font-size: 17px;
+  }
+  #welcomePage .wl-account > span:not(.welcome-account-avatar) { min-width: 0; }
+  #welcomePage #welcomeAccountTools :is(small, b) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  #welcomePage #welcomeAccountTools small { font-size: 9px; }
+  #welcomePage #welcomeAccountTools b { font-size: 12px; }
   #welcomePage .wl-account button {
     flex: 0 0 auto;
     width: auto;
@@ -4719,6 +4741,14 @@ html.streamlit-embed .side .side-foot {
     white-space: nowrap;
     line-height: 1.4;
     transform: none;
+  }
+  #welcomePage #welcomeAccountTools button {
+    min-height: 34px;
+    padding: 7px 9px;
+    border-width: 1px;
+    border-radius: 10px;
+    font-size: 11px;
+    box-shadow: 1px 2px 0 rgba(67,48,46,.14);
   }
   #welcomePage:has(.wl-account:not([hidden])) .wl-main { padding-top: 32px; }
 }
