@@ -4606,3 +4606,16 @@ body,#appShell{background-color:transparent!important;background-image:none!impo
   .side.nav-auto-collapse .side-home-owner,
   .side.nav-auto-collapse .side-home-arrow{display:none!important}
 }
+
+
+/* Streamlit iframe: keep the login dialog near the top of the visible page.
+   A 100vh welcome page grows with the iframe after each height update. */
+html.streamlit-embed #welcomePage {
+  min-height: 0;
+}
+
+html.streamlit-embed #authModal {
+  align-items: start;
+  padding-top: 24px;
+  overflow-y: auto;
+}

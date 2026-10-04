@@ -21,6 +21,8 @@
     };
     return;
   }
+  // Scope iframe layout fixes to Streamlit; the local Python app keeps its layout.
+  document.documentElement.classList.add("streamlit-embed");
   let config = null, active = null, counter = 0, readyResolve;
   const ready = new Promise(resolve => { readyResolve = resolve; });
   const queue = [];
