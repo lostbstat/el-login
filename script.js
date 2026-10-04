@@ -352,8 +352,8 @@ if ($('logoutButton')) {
 if ($('welcomeLogoutButton')) {
   $('welcomeLogoutButton').onclick = () => performLogout($('welcomeLogoutButton'));
 }
-const EN={n1:"AI Assistant",n2:"Dashboard",n3:"🔌 Appliances",set:"Settings",lang:"Language",cur:"Currency",s1:"Upload electricity bill photos (any language)",read:"Let AI read the bills",hint:"Hide your name and address before uploading · or enter data manually below",s2:"Monthly data (editable)",add:"+ Add row",demo:"Sample data",go:"Open dashboard →",pm:"Month",pa:"Amount",none:"No data yet",del:"Delete",s3:"Ask the AI assistant",pq:"Type your question",send:"Send",stop:"Stop",note:"Numbers are computed by code and the AI only explains them · savings are estimates",c1:"Why are some months more expensive?",c2:"Help me plan how to cut my bill",c3:"Which appliances probably use the most power?",k1:"Average / month",k2:"Highest",k3:"Latest vs previous month",k4:"Forecast next month",ksub:"from {0} months",ct:"Actual bills + 3-month forecast",cn:"Forecast uses the trained Ridge ratio + calendar-month model from Dataset_Elec.csv · dashed line = your average",need:"Enter at least 1 month to see the forecast",st2:"AI summary",sb:"Summarize with AI",at:"Don't know your daily usage? Estimate it from appliances",an:"Enter power (watts, see the label), hours per day and number of units. Defaults are rough averages - adjust them to your home.",aa:"+ Add appliance",pr:"Price per kWh",pn:"Name",u1:"W",u2:"h/day",u3:"units",e0:"Per day",e1:"Per month",e2:"vs your bills (avg {0} kWh)",lo:"Estimate is lower than your bills - some appliances may be missing",hi:"Estimate is higher than your bills - try fewer hours",ok:"Close to your bills",sh:"Share by appliance",cn2:"watts × hours × units × 30 days · estimate only; cycling appliances (fridge, A/C) use less than rated power",it:"🤖 AI insights & saving tips",ib:"Analyze & suggest savings",ts:"saves ~{0} kWh/month{1}",tot:"If you apply all: ~{0} kWh/month{1} (estimate)",apl:"Apply to table",done:"Applied",o1:"Open this app through Python or Streamlit to use Gemini AI",o2:"Image reading is not available here - please enter data manually",r0:"Please choose bill photos first",r1:"Max {0} images at a time",r2:"AI is reading... (may take a moment)",r3:"Read {0} bills - please check the numbers",e_1:"You did not allow AI use",e_2:"Too many requests, try again later",e_3:"Image not usable, try another",e_4:"AI answered in an unreadable format, try a clearer photo",e_5:"Something went wrong, please try again",th:"Thinking...",tr:"Translating the interface...",tf:"Translation failed - showing English",a1:"A/C",a2:"Fridge",a3:"Fan",a4:"TV",a5:"Lights",a6:"Laptop",need2:"Enter at least 1 month first",col_m:"Month-Year",col_a:"Bill amount",col_k:"Units (kWh)"};
-const TH={n1:"ถามผู้ช่วย AI",n2:"ภาพรวมค่าไฟ",n3:"🔌 เครื่องใช้ไฟฟ้า",set:"ตั้งค่า",lang:"ภาษา",cur:"สกุลเงิน",s1:"อัปโหลดรูปบิลค่าไฟ (ภาษาไหนก็ได้)",read:"ให้ AI อ่านบิล",hint:"ควรปิดชื่อและที่อยู่ก่อนอัปโหลด · หรือกรอกเองด้านล่างก็ได้",s2:"ข้อมูลรายเดือน (แก้ไขได้)",add:"+ เพิ่มเอง",demo:"ตัวอย่างข้อมูล",go:"ดูแดชบอร์ด →",pm:"เดือน",pa:"ยอดเงิน",none:"ยังไม่มีข้อมูล",del:"ลบ",s3:"ถามผู้ช่วย AI",pq:"พิมพ์คำถามได้เลย",send:"ส่ง",stop:"หยุด",note:"ตัวเลขคำนวณโดยโค้ด AI เป็นผู้เรียบเรียงเท่านั้น · ตัวเลขการประหยัดเป็นค่าประมาณ",c1:"ทำไมบางเดือนบิลแพงกว่าเดือนอื่น",c2:"ช่วยวางแผนลดค่าไฟให้หน่อย",c3:"เครื่องใช้ไฟฟ้าอะไรน่าจะกินไฟมากสุด",k1:"บิลเฉลี่ย/เดือน",k2:"สูงสุด",k3:"เดือนล่าสุดเทียบเดือนก่อน",k4:"พยากรณ์เดือนหน้า",ct:"ค่าไฟจริง + พยากรณ์ 3 เดือนถัดไป",cn:"แนวโน้มเชิงเส้นจากข้อมูลของคุณเอง ยังไม่จับฤดูกาล (ต้องมี 12 เดือนขึ้นไป) · เส้นประ = ค่าเฉลี่ยของคุณ",need:"กรอกข้อมูลอย่างน้อย 3 เดือนในหน้าแรก จึงจะแสดงกราฟและพยากรณ์ได้",st2:"AI สรุปภาพรวม",sb:"ให้ AI สรุปให้",at:"ไม่รู้ว่าใช้ไฟวันละเท่าไร? ประมาณจากเครื่องใช้ไฟฟ้า",an:"ใส่กำลังไฟ (วัตต์ ดูจากป้ายเครื่อง) ชั่วโมงที่ใช้ต่อวัน และจำนวนเครื่อง ค่าเริ่มต้นเป็นค่าเฉลี่ยคร่าว ๆ ปรับให้ตรงกับบ้านคุณ",aa:"+ เพิ่มเครื่องใช้",pr:"ราคา/kWh",pn:"ชื่อ",u1:"วัตต์",u2:"ชม./วัน",u3:"เครื่อง",e0:"ต่อวัน",e1:"ต่อเดือน",e2:"เทียบบิลจริง (เฉลี่ย {0} kWh)",lo:"ประมาณการต่ำกว่าบิล อาจมีเครื่องที่ยังไม่ได้ใส่",hi:"ประมาณการสูงกว่าบิล ลองลดชั่วโมงใช้งาน",ok:"ใกล้เคียงบิลจริง",sh:"สัดส่วนแต่ละเครื่อง",cn2:"วัตต์ × ชั่วโมง × จำนวน × 30 วัน · เป็นค่าประมาณ เครื่องที่ทำงานเป็นรอบ (ตู้เย็น แอร์) กินไฟจริงน้อยกว่ากำลังที่ระบุบนป้าย",it:"🤖 AI วิเคราะห์และแนะนำการประหยัดไฟ",ib:"วิเคราะห์และแนะนำวิธีประหยัด",ts:"ประหยัดได้ ~{0} kWh/เดือน{1}",tot:"ถ้าทำครบทุกข้อ: ~{0} kWh/เดือน{1} (ค่าประมาณ)",apl:"ใช้ค่านี้ในตาราง",done:"ใช้แล้ว",o1:"เปิดเว็บผ่าน Python หรือ Streamlit เพื่อใช้งาน Gemini AI",o2:"ที่นี่ยังอ่านรูปไม่ได้ กรุณากรอกข้อมูลเอง",r0:"กรุณาเลือกรูปบิลก่อน",r1:"ส่งได้ครั้งละ {0} รูป",r2:"AI กำลังอ่านบิล... (อาจใช้เวลาสักครู่)",r3:"อ่านได้ {0} บิล กรุณาตรวจสอบตัวเลข",e_1:"คุณไม่ได้อนุญาตให้ใช้ AI",e_2:"ใช้งานถี่เกินไป ลองใหม่ภายหลัง",e_3:"ไฟล์รูปใช้ไม่ได้ ลองรูปอื่น",e_4:"AI ตอบในรูปแบบที่อ่านไม่ได้ ลองรูปที่ชัดขึ้น",e_5:"เกิดข้อผิดพลาด ลองใหม่อีกครั้ง",th:"กำลังคิด...",tr:"กำลังแปลหน้าจอ...",tf:"แปลไม่สำเร็จ แสดงเป็นอังกฤษ",a1:"แอร์",a2:"ตู้เย็น",a3:"พัดลม",a4:"ทีวี",a5:"หลอดไฟ",a6:"โน้ตบุ๊ก",need2:"กรอกอย่างน้อย 1 เดือนก่อน",col_m:"เดือน-ปี",col_a:"ยอดบิล",col_k:"หน่วย(kWh)"};
+const EN={n1:"AI Assistant",n2:"Dashboard",n3:" Appliances",set:"Settings",lang:"Language",cur:"Currency",s1:"Upload electricity bill photos (any language)",read:"Let AI read the bills",hint:"Hide your name and address before uploading · or enter data manually below",s2:"Monthly data (editable)",add:"+ Add row",demo:"Sample data",go:"Open dashboard →",pm:"Month",pa:"Amount",none:"No data yet",del:"Delete",s3:"Ask the AI assistant",pq:"Type your question",send:"Send",stop:"Stop",note:"Numbers are computed by code and the AI only explains them · savings are estimates",c1:"Why are some months more expensive?",c2:"Help me plan how to cut my bill",c3:"Which appliances probably use the most power?",k1:"Average / month",k2:"Highest",k3:"Latest vs previous month",k4:"Forecast next month",ksub:"from {0} months",ct:"Actual bills + 3-month forecast",cn:"Forecast uses the trained Ridge ratio + calendar-month model from Dataset_Elec.csv · dashed line = your average",need:"Enter at least 1 month to see the forecast",st2:"AI summary",sb:"Summarize with AI",at:"Don't know your daily usage? Estimate it from appliances",an:"Enter power (watts, see the label), hours per day and number of units. Defaults are rough averages - adjust them to your home.",aa:"+ Add appliance",pr:"Price per kWh",pn:"Name",u1:"W",u2:"h/day",u3:"units",e0:"Per day",e1:"Per month",e2:"vs your bills (avg {0} kWh)",lo:"Estimate is lower than your bills - some appliances may be missing",hi:"Estimate is higher than your bills - try fewer hours",ok:"Close to your bills",sh:"Share by appliance",cn2:"watts × hours × units × 30 days · estimate only; cycling appliances (fridge, A/C) use less than rated power",it:"🤖 AI insights & saving tips",ib:"Analyze & suggest savings",ts:"saves ~{0} kWh/month{1}",tot:"If you apply all: ~{0} kWh/month{1} (estimate)",apl:"Apply to table",done:"Applied",o1:"Open this app through Python or Streamlit to use Gemini AI",o2:"Image reading is not available here - please enter data manually",r0:"Please choose bill photos first",r1:"Max {0} images at a time",r2:"AI is reading... (may take a moment)",r3:"Read {0} bills - please check the numbers",e_1:"You did not allow AI use",e_2:"Too many requests, try again later",e_3:"Image not usable, try another",e_4:"AI answered in an unreadable format, try a clearer photo",e_5:"Something went wrong, please try again",th:"Thinking...",tr:"Translating the interface...",tf:"Translation failed - showing English",a1:"A/C",a2:"Fridge",a3:"Fan",a4:"TV",a5:"Lights",a6:"Laptop",need2:"Enter at least 1 month first",col_m:"Month-Year",col_a:"Bill amount",col_k:"Units (kWh)"};
+const TH={n1:"ถามผู้ช่วย AI",n2:"ภาพรวมค่าไฟ",n3:" เครื่องใช้ไฟฟ้า",set:"ตั้งค่า",lang:"ภาษา",cur:"สกุลเงิน",s1:"อัปโหลดรูปบิลค่าไฟ (ภาษาไหนก็ได้)",read:"ให้ AI อ่านบิล",hint:"ควรปิดชื่อและที่อยู่ก่อนอัปโหลด · หรือกรอกเองด้านล่างก็ได้",s2:"ข้อมูลรายเดือน (แก้ไขได้)",add:"+ เพิ่มเอง",demo:"ตัวอย่างข้อมูล",go:"ดูแดชบอร์ด →",pm:"เดือน",pa:"ยอดเงิน",none:"ยังไม่มีข้อมูล",del:"ลบ",s3:"ถามผู้ช่วย AI",pq:"พิมพ์คำถามได้เลย",send:"ส่ง",stop:"หยุด",note:"ตัวเลขคำนวณโดยโค้ด AI เป็นผู้เรียบเรียงเท่านั้น · ตัวเลขการประหยัดเป็นค่าประมาณ",c1:"ทำไมบางเดือนบิลแพงกว่าเดือนอื่น",c2:"ช่วยวางแผนลดค่าไฟให้หน่อย",c3:"เครื่องใช้ไฟฟ้าอะไรน่าจะกินไฟมากสุด",k1:"บิลเฉลี่ย/เดือน",k2:"สูงสุด",k3:"เดือนล่าสุดเทียบเดือนก่อน",k4:"พยากรณ์เดือนหน้า",ct:"ค่าไฟจริง + พยากรณ์ 3 เดือนถัดไป",cn:"แนวโน้มเชิงเส้นจากข้อมูลของคุณเอง ยังไม่จับฤดูกาล (ต้องมี 12 เดือนขึ้นไป) · เส้นประ = ค่าเฉลี่ยของคุณ",need:"กรอกข้อมูลอย่างน้อย 3 เดือนในหน้าแรก จึงจะแสดงกราฟและพยากรณ์ได้",st2:"AI สรุปภาพรวม",sb:"ให้ AI สรุปให้",at:"ไม่รู้ว่าใช้ไฟวันละเท่าไร? ประมาณจากเครื่องใช้ไฟฟ้า",an:"ใส่กำลังไฟ (วัตต์ ดูจากป้ายเครื่อง) ชั่วโมงที่ใช้ต่อวัน และจำนวนเครื่อง ค่าเริ่มต้นเป็นค่าเฉลี่ยคร่าว ๆ ปรับให้ตรงกับบ้านคุณ",aa:"+ เพิ่มเครื่องใช้",pr:"ราคา/kWh",pn:"ชื่อ",u1:"วัตต์",u2:"ชม./วัน",u3:"เครื่อง",e0:"ต่อวัน",e1:"ต่อเดือน",e2:"เทียบบิลจริง (เฉลี่ย {0} kWh)",lo:"ประมาณการต่ำกว่าบิล อาจมีเครื่องที่ยังไม่ได้ใส่",hi:"ประมาณการสูงกว่าบิล ลองลดชั่วโมงใช้งาน",ok:"ใกล้เคียงบิลจริง",sh:"สัดส่วนแต่ละเครื่อง",cn2:"วัตต์ × ชั่วโมง × จำนวน × 30 วัน · เป็นค่าประมาณ เครื่องที่ทำงานเป็นรอบ (ตู้เย็น แอร์) กินไฟจริงน้อยกว่ากำลังที่ระบุบนป้าย",it:"🤖 AI วิเคราะห์และแนะนำการประหยัดไฟ",ib:"วิเคราะห์และแนะนำวิธีประหยัด",ts:"ประหยัดได้ ~{0} kWh/เดือน{1}",tot:"ถ้าทำครบทุกข้อ: ~{0} kWh/เดือน{1} (ค่าประมาณ)",apl:"ใช้ค่านี้ในตาราง",done:"ใช้แล้ว",o1:"เปิดเว็บผ่าน Python หรือ Streamlit เพื่อใช้งาน Gemini AI",o2:"ที่นี่ยังอ่านรูปไม่ได้ กรุณากรอกข้อมูลเอง",r0:"กรุณาเลือกรูปบิลก่อน",r1:"ส่งได้ครั้งละ {0} รูป",r2:"AI กำลังอ่านบิล... (อาจใช้เวลาสักครู่)",r3:"อ่านได้ {0} บิล กรุณาตรวจสอบตัวเลข",e_1:"คุณไม่ได้อนุญาตให้ใช้ AI",e_2:"ใช้งานถี่เกินไป ลองใหม่ภายหลัง",e_3:"ไฟล์รูปใช้ไม่ได้ ลองรูปอื่น",e_4:"AI ตอบในรูปแบบที่อ่านไม่ได้ ลองรูปที่ชัดขึ้น",e_5:"เกิดข้อผิดพลาด ลองใหม่อีกครั้ง",th:"กำลังคิด...",tr:"กำลังแปลหน้าจอ...",tf:"แปลไม่สำเร็จ แสดงเป็นอังกฤษ",a1:"แอร์",a2:"ตู้เย็น",a3:"พัดลม",a4:"ทีวี",a5:"หลอดไฟ",a6:"โน้ตบุ๊ก",need2:"กรอกอย่างน้อย 1 เดือนก่อน",col_m:"เดือน-ปี",col_a:"ยอดบิล",col_k:"หน่วย(kWh)"};
 Object.assign(EN,{clear_bills:'Delete all'});Object.assign(TH,{clear_bills:'ลบทั้งหมด'});
 Object.assign(EN,{pt:"Usage pattern & forecast model",peak:"Highest month",low:"Lowest month",spr:"High vs low gap",upk:"Avg cost per kWh",md:"Forecast model",mch:"Month-by-month change",m_lin:"Linear regression",m_holt:"Exponential smoothing",m_ma:"Moving average (3 months)",m_ridge:"Ridge ratio + calendar month",m_rf:"Random Forest",m_xgb:"XGBoost",m_lgbm:"LightGBM",m_cat:"CatBoost",bt:"Monthly budget check",bh:"Set a budget to see if the next 3 months go over",bp:"e.g. 2000",bok:"Within budget",bov:"Over by {0}",cn:"Forecast uses the Ridge ratio + calendar-month model trained from Dataset_Elec.csv. It automatically uses 1-12 recent bills depending on the history available · dashed line = your average"});
 Object.assign(TH,{pt:"รูปแบบการใช้ไฟ และโมเดลพยากรณ์",peak:"เดือนที่ใช้สูงสุด",low:"เดือนที่ใช้ต่ำสุด",spr:"ส่วนต่างสูง-ต่ำ",upk:"ค่าไฟเฉลี่ยต่อหน่วย",md:"โมเดลพยากรณ์",mch:"การเปลี่ยนแปลงรายเดือน",m_lin:"ถดถอยเชิงเส้น",m_holt:"Exponential smoothing",m_ma:"ค่าเฉลี่ยเคลื่อนที่ 3 เดือน",m_ridge:"Ridge + เดือนปฏิทิน",m_rf:"Random Forest",m_xgb:"XGBoost",m_lgbm:"LightGBM",m_cat:"CatBoost",bt:"เช็กงบค่าไฟรายเดือน",bh:"ตั้งงบไว้ ดูว่า 3 เดือนข้างหน้าเกินไหม",bp:"เช่น 2000",bok:"อยู่ในงบ",bov:"เกินงบ {0}",cn:"พยากรณ์ด้วยโมเดล Ridge ratio + เดือนปฏิทินที่ฝึกจาก Dataset_Elec.csv โดยใช้ประวัติล่าสุด 1-12 เดือนตามข้อมูลที่มี · เส้นประ = ค่าเฉลี่ยของคุณ"});
@@ -499,7 +499,7 @@ caps = { images: { maxCount: 4, maxBytes: 3 * 1024 * 1024, mimeTypes: ['image/pn
 function rows(){
   $('rows').innerHTML = bills.map((b,i)=>`
     <div class="bill-data-row">
-      <input class="n" value="${b.m||''}" placeholder="${t('col_m')}" oninput="bills[${i}].m=this.value">
+      <input class="n bill-month-input" inputmode="numeric" autocomplete="off" value="${billMonthInputValue(b.m)}" placeholder="${t('col_m')}" oninput="editBillMonth(this,${i},event)" onblur="finishBillMonth(this,${i})">
       <input type="number" value="${b.amt??''}" placeholder="${t('col_a')}" oninput="bills[${i}].amt=this.value===''?null:+this.value">
       <input type="number" value="${b.kwh??''}" placeholder="${t('col_k')}" oninput="bills[${i}].kwh=this.value===''?null:+this.value">
       <button class="g bill-delete-btn" onclick="bills.splice(${i},1);rows()">${t('del')}</button>
@@ -574,45 +574,119 @@ async function getForecastModel(){
   return FORECAST_MODEL;
 }
 
+// Month inputs accept Thai/English month names, BE/CE years, and numeric separators.
+// A short year 50-99 means 25xx BE (69 = 2569); 00-49 means 20xx CE.
+function billMonthDigits(value){
+  return String(value??'').replace(/[๐-๙]/g,c=>String(c.charCodeAt(0)-0x0E50));
+}
+function billMonthYear(value){
+  const text=String(value);
+  if(!/^\d{2}$|^\d{4}$/.test(text))return null;
+  let year=+text;
+  if(text.length===2)year=year>=50?2500+year-543:2000+year;
+  else if(year>=2400)year-=543;
+  return year>=1900&&year<=2399?year:null;
+}
+function billMonthDate(year,month,day=1){
+  const y=billMonthYear(year),m=+month,d=+day;
+  if(y===null||m<1||m>12||d<1||d>31)return null;
+  const date=new Date(y,m-1,d);
+  return date.getFullYear()===y&&date.getMonth()===m-1&&date.getDate()===d
+    ?new Date(y,m-1,1):null;
+}
 function parseBillMonth(value){
-  const raw=String(value??'').trim();
+  const raw=billMonthDigits(value).trim().replace(/[–—−]/g,'-');
   if(!raw)return null;
-
-  // 2569-08 / 2026-08 / 2569/8 / 2026/8
-  let m=raw.match(/^\s*(\d{4})\s*[-\/.]\s*(\d{1,2})/);
-  if(m){
-    let y=+m[1],mo=+m[2];
-    if(y>=2400)y-=543;
-    if(y>=1900&&mo>=1&&mo<=12)return new Date(y,mo-1,1);
-  }
-
-  // 08-2569 / 8/2026
-  m=raw.match(/^\s*(\d{1,2})\s*[-\/.]\s*(\d{4})/);
-  if(m){
-    let mo=+m[1],y=+m[2];
-    if(y>=2400)y-=543;
-    if(y>=1900&&mo>=1&&mo<=12)return new Date(y,mo-1,1);
+  const iso=raw.match(/^(\d{4})-(\d{1,2})-(\d{1,2})T\d{2}:\d{2}/i);
+  if(iso)return billMonthDate(iso[1],iso[2],iso[3]);
+  const numeric=raw.replace(/(?:เดือน|ปี|พ\s*\.?\s*ศ\s*\.?|ค\s*\.?\s*ศ\s*\.?|b\.?e\.?|c\.?e\.?)\s*/gi,' ').trim();
+  if(/^[\d\s/.,-]+$/.test(numeric)){
+    const parts=numeric.split(/[\s/.,-]+/).filter(Boolean);
+    if(parts.length===2){
+      const [a,b]=parts;
+      if(a.length===4)return billMonthDate(a,b);
+      if(+a>=1&&+a<=12)return billMonthDate(b,a);
+      if(+b>=1&&+b<=12)return billMonthDate(a,b);
+      return null;
+    }
+    if(parts.length===3){
+      const [a,b,c]=parts;
+      return a.length===4?billMonthDate(a,b,c):billMonthDate(c,b,a);
+    }
+    if(parts.length!==1)return null;
+    const digits=parts[0];
+    // Compact month/year: 969, 0969, 92569, 092569, 202609, 256909.
+    if(digits.length===3)return billMonthDate(digits.slice(1),digits[0]);
+    if(digits.length===4)return billMonthDate(digits.slice(2),digits.slice(0,2));
+    if(digits.length===5||digits.length===6){
+      const yearFirst=billMonthDate(digits.slice(0,4),digits.slice(4));
+      return yearFirst||billMonthDate(digits.slice(-4),digits.slice(0,-4));
+    }
+    if(digits.length===8){
+      return billMonthDate(digits.slice(0,4),digits.slice(4,6),digits.slice(6))
+        ||billMonthDate(digits.slice(4),digits.slice(2,4),digits.slice(0,2));
+    }
+    return null;
   }
 
   const thMonths=[
-    ['มกราคม','ม.ค.','มค'],['กุมภาพันธ์','ก.พ.','กพ'],['มีนาคม','มี.ค.','มีค'],
-    ['เมษายน','เม.ย.','เมย'],['พฤษภาคม','พ.ค.','พค'],['มิถุนายน','มิ.ย.','มิย'],
-    ['กรกฎาคม','ก.ค.','กค'],['สิงหาคม','ส.ค.','สค'],['กันยายน','ก.ย.','กย'],
-    ['ตุลาคม','ต.ค.','ตค'],['พฤศจิกายน','พ.ย.','พย'],['ธันวาคม','ธ.ค.','ธค']
+    ['มกราคม','มค'],['กุมภาพันธ์','กพ'],['มีนาคม','มีค'],['เมษายน','เมย'],
+    ['พฤษภาคม','พค'],['มิถุนายน','มิย'],['กรกฎาคม','กค'],['สิงหาคม','สค'],
+    ['กันยายน','กย'],['ตุลาคม','ตค'],['พฤศจิกายน','พย'],['ธันวาคม','ธค']
   ];
-  const lower=raw.toLowerCase();
-  for(let i=0;i<thMonths.length;i++){
-    if(thMonths[i].some(x=>lower.includes(x))){
-      const ym=raw.match(/(\d{4})/);
-      let y=ym?+ym[1]:new Date().getFullYear();
-      if(y>=2400)y-=543;
-      return new Date(y,i,1);
-    }
+  const enMonths=['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+  const lower=raw.toLowerCase().replace(/\./g,'');
+  let month=thMonths.findIndex(names=>names.some(name=>lower.includes(name)));
+  if(month<0)month=enMonths.findIndex(name=>new RegExp('\\b'+name+'[a-z]*\\b').test(lower));
+  if(month<0)return null;
+  const numbers=lower.match(/\d+/g)||[];
+  const year=numbers.find(number=>number.length===4)||numbers.filter(number=>number.length===2).at(-1);
+  // Month names without a year retain the previous current-year behavior.
+  return billMonthDate(year||String(new Date().getFullYear()),month+1);
+}
+function billMonthInputValue(value){
+  const date=parseBillMonth(value);
+  const text=date?`${String(date.getMonth()+1).padStart(2,'0')}-${date.getFullYear()+(lc==='th'?543:0)}`:String(value??'');
+  return text.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function billMonthTyping(digits){
+  if(digits.length<2)return digits;
+  if(digits.length>=5&&billMonthYear(digits.slice(0,4))!==null)
+    return digits.slice(0,4)+'-'+digits.slice(4);
+  if(digits.length===4&&billMonthYear(digits)!==null)return digits;
+  if(digits.length===5&&billMonthYear(digits.slice(1))!==null)
+    return digits[0]+'-'+digits.slice(1);
+  const split=+digits.slice(0,2)>=1&&+digits.slice(0,2)<=12?2:1;
+  return digits.length>split?digits.slice(0,split)+'-'+digits.slice(split):digits;
+}
+function editBillMonth(input,index,event){
+  if(event?.isComposing){bills[index].m=input.value;return}
+  const raw=billMonthDigits(input.value);
+  const digitsOnly=/^\d*$/.test(raw);
+  const auto=input.dataset.monthAuto==='1'&&/^[\d-]*$/.test(raw)
+    &&(!event?.data||/^\d+$/.test(billMonthDigits(event.data)))
+    &&event?.inputType!=='insertFromPaste';
+  if(digitsOnly||auto){
+    const caret=input.selectionStart??raw.length;
+    const before=raw.slice(0,caret).replace(/\D/g,'').length;
+    const formatted=billMonthTyping(raw.replace(/\D/g,''));
+    input.value=formatted;
+    input.dataset.monthAuto='1';
+    let position=0,count=0;
+    while(position<formatted.length&&count<before){if(/\d/.test(formatted[position]))count++;position++}
+    if(formatted[position]==='-')position++;
+    input.setSelectionRange(position,position);
+  }else{input.value=raw;delete input.dataset.monthAuto}
+  bills[index].m=input.value;
+}
+function finishBillMonth(input,index){
+  const date=parseBillMonth(input.value);
+  if(date){
+    input.value=`${String(date.getMonth()+1).padStart(2,'0')}-${date.getFullYear()+(lc==='th'?543:0)}`;
+    delete input.dataset.monthAuto;
   }
-
-  // English month names or ISO-ish strings.
-  const d=new Date(raw);
-  return Number.isNaN(d.getTime())?null:new Date(d.getFullYear(),d.getMonth(),1);
+  bills[index].m=input.value.trim();
+  window.saveBillsNow?.();
 }
 
 function addMonths(d,n){
@@ -1527,9 +1601,24 @@ const et=EL.reduce((q,x)=>q+kw(x),0);if(et>0&&u>et*1.5)P(0,t('oc_eh',et.toFixed(
 const s=stats();if(s&&s.ak&&u>s.ak*1.4)P(0,t('oc_sh',s.ak.toFixed(0)));o.innerHTML=H.join('')}
 function inv(a,ft){for(let u=.5;u<=3000;u+=.5)if(offc(u,ft).tot>=a)return u;return 3000}
 function bcc(){const ft=+$('bft').value||0,c=cur(),u=+$('bu').value,a=+$('ba').value;$('bo1').textContent=u>0?t('bc_r1',u,offc(u,ft).tot.toFixed(0),c):'';$('bo2').textContent=a>0?t('bc_r2',inv(a,ft).toFixed(0),a,c):''}
-function plan(){occ();bcc();plan0();hsum();try{window.saveHomeSoon&&saveHomeSoon()}catch(e){}$('pi').disabled=!sample||!PL;$('ph').textContent=!sample?t('o1'):!PL?t('pl_ah'):''}
-function plan0(){const b=+$('pb').value,pr=+$('price').value,fee=+$('pf').value||0,lim=+$('pw').value||0,c=cur(),A=EL.filter(a=>a.w>0&&a.h>0&&a.q>0);PL=null;$('pv').textContent='';
-if(!b||!pr||!A.length){$('po').innerHTML=`<div class="tip" style="background:var(--t3)">${t('pl_ah2')}</div>`;return}
+let planAIBusy=false;
+function planInputIssue(){
+  const th=lc==='th',budget=+$('pb').value,price=+$('price').value,fee=+$('pf').value||0;
+  if(!Number.isFinite(budget)||budget<=0)return{field:'pb',message:th?'ใส่งบสูงสุดต่อเดือนมากกว่า 0 ก่อน แล้วกดให้ AI อธิบายแผนได้เลย':'Enter a monthly budget greater than 0, then ask AI to explain the plan.'};
+  if(!Number.isFinite(price)||price<=0)return{field:'price',message:th?'ใส่ราคาไฟต่อหน่วยมากกว่า 0 ก่อน':'Enter an electricity price per kWh greater than 0.'};
+  if(!Number.isFinite(fee)||fee<0||fee>=budget)return{field:'pf',message:th?'ค่าคงที่ต้องไม่ติดลบและต้องน้อยกว่างบต่อเดือน':'Fixed fees must be nonnegative and less than the monthly budget.'};
+  if(!EL.some(a=>a.w>0&&a.h>0&&a.q>0))return{message:th?'เพิ่มเครื่องใช้ไฟฟ้าและชั่วโมงใช้งานในหน้าเครื่องใช้ไฟฟ้าก่อน แล้วกลับมากดให้ AI อธิบายแผน':'Add appliances and their usage hours on the appliances page, then ask AI to explain the plan.'};
+  return null;
+}
+function plan(){
+  occ();bcc();plan0();hsum();
+  try{window.saveHomeSoon&&saveHomeSoon()}catch(e){}
+  $('pi').disabled=planAIBusy;
+  $('pi').setAttribute('aria-busy',String(planAIBusy));
+  $('ph').textContent=!sample?t('o1'):!PL?(planInputIssue()?.message||t('pl_ah')):'';
+}
+function plan0(){const b=+$('pb').value,pr=+$('price').value,fee=+$('pf').value||0,lim=+$('pw').value||0,c=cur(),A=EL.filter(a=>a.w>0&&a.h>0&&a.q>0);PL=null;if(!planAIBusy)$('pv').textContent='';
+if(!Number.isFinite(b)||b<=0||!Number.isFinite(pr)||pr<=0||fee<0||!Number.isFinite(fee)||!A.length){$('po').innerHTML=`<div class="tip" style="background:var(--t3)">${t('pl_ah2')}</div>`;return}
 const cap=(b-fee)/pr;if(cap<=0){$('po').innerHTML=`<div class="tip" style="background:var(--t3)">${t('pl_x')}</div>`;return}
 const H=new Map(A.map(a=>[a,a.h])),want=A.reduce((s,a)=>s+pk(a,a.h),0);let need=want-cap;
 if(need>0)for(const [tier,fl] of [[3,0],[2,.4]]){const T=A.filter(a=>(a.p||2)==tier),tk=T.reduce((s,a)=>s+pk(a,a.h),0);if(!tk||need<=0)continue;const cut=Math.min(need,tk*(1-fl)),sc=(tk-cut)/tk;T.forEach(a=>H.set(a,Math.floor(a.h*sc*2)/2));need=A.reduce((s,a)=>s+pk(a,H.get(a)),0)-cap}
@@ -1540,8 +1629,22 @@ const mx=Math.max(...A.map(a=>pk(a,a.h)));
 $('po').innerHTML=`<div class="grid"><div class="card" style="margin:0"><div class="k">${t('pl_k1')}</div><div class="v">${cap.toFixed(0)} kWh</div></div><div class="card" style="margin:0"><div class="k">${t('pl_k2')}</div><div class="v">${tot.toFixed(0)} kWh</div></div><div class="card" style="margin:0"><div class="k">${t('pl_k3')}</div><div class="v">${cost.toFixed(0)} ${c}</div></div><div class="card" style="margin:0"><div class="k">${t('pl_k4')}</div><div class="v">${left.toFixed(0)} ${c}</div></div></div>
 <div class="card"><h2>${t('pl_hd')}</h2><div class="note" style="margin:0 0 8px">${t(cut?'pl_cut':'pl_ok')}</div>${A.map(a=>{const h=H.get(a);return `<div style="display:flex;align-items:center;gap:8px;margin:8px 0;font-size:13px"><div style="width:96px;color:var(--mu)">${nm(a)||'?'}</div><div style="flex:1;background:var(--bd);border-radius:9px"><div style="width:${pk(a,h)/mx*100}%;background:${h<a.h?'var(--ac)':'var(--bl)'};height:18px;border-radius:9px"></div></div><b style="min-width:150px;text-align:right">${h<a.h?t('pl_from',a.h+'h'):''} ${h} ${t('u2')}</b></div>`}).join('')}
 ${over>0?`<div class="tip" style="background:var(--t3)">${t('pl_no',over.toFixed(0),(over*pr).toFixed(0)+' '+c)}</div>`:''}${lim&&W>lim?`<div class="tip" style="background:var(--t3)">${t('pl_w',W,lim,hi||'-')}</div>`:''}${A.some(a=>a.k=='a1'&&H.get(a)>0)?`<div class="tip">${t('pl_ac')}</div>`:''}<div class="note">${t('cn2')}</div></div>`;}
-async function planAI(){if(!requireAccount())return;if(!sample||!PL)return;$('pi').disabled=true;$('pv').textContent=t('th');
-try{await sample(`${RULES()}\n\nThe user lives in a dorm room with a monthly budget of ${PL.b} ${PL.c} at ${PL.pr} per kWh. The system already computed this plan (do not recompute): allowed ${PL.cap.toFixed(0)} kWh, planned ${PL.tot.toFixed(0)} kWh, cost ${PL.cost.toFixed(0)}. Hours per day per appliance: ${PL.rows.map(r=>`${r.n} wants ${r.want}h -> ${r.h}h (priority ${r.p}, 1=must)`).join('; ')}. Explain the plan in 5 lines: what was cut and why, and 2-3 practical habits (e.g. timer, when to use A/C) to stay in budget.`,{modelTier:"quick",onText:({text})=>{$('pv').textContent=text}})}catch(e){$('pv').textContent=ERR(e)}$('pi').disabled=false}
+async function planAI(){
+  if(planAIBusy||!requireAccount())return;
+  plan();
+  const issue=planInputIssue();
+  if(issue){
+    $('pv').textContent=issue.message;
+    if(issue.field)$(issue.field).focus();
+    return;
+  }
+  if(!sample||!PL){$('pv').textContent=!sample?t('o1'):t('pl_ah2');return}
+  const requestedPlan=JSON.stringify(PL);
+  planAIBusy=true;
+  $('pi').disabled=true;
+  $('pi').setAttribute('aria-busy','true');
+  $('pv').textContent=t('th');
+try{await sample(`${RULES()}\n\nThe user lives in a dorm room with a monthly budget of ${PL.b} ${PL.c} at ${PL.pr} per kWh. The system already computed this plan (do not recompute): allowed ${PL.cap.toFixed(0)} kWh, planned ${PL.tot.toFixed(0)} kWh, cost ${PL.cost.toFixed(0)}. Hours per day per appliance: ${PL.rows.map(r=>`${r.n} wants ${r.want}h -> ${r.h}h (priority ${r.p}, 1=must)`).join('; ')}. Explain the plan in 5 lines: what was cut and why, and 2-3 practical habits (e.g. timer, when to use A/C) to stay in budget.`,{modelTier:"quick",onText:({text})=>{if(JSON.stringify(PL)===requestedPlan)$('pv').textContent=text}})}catch(e){$('pv').textContent=ERR(e)}finally{if(JSON.stringify(PL)!==requestedPlan)$('pv').textContent=lc==='th'?'ข้อมูลแผนเปลี่ยนแล้ว กดให้ AI อธิบายแผนอีกครั้ง':'The plan changed. Ask AI to explain the updated plan again.';planAIBusy=false;$('pi').disabled=false;$('pi').setAttribute('aria-busy','false')}}
 const __cv=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();const RC0={l:__cv('--second2'),r:__cv('--base'),f:__cv('--second1'),fs:'grid',ws:''};let RC={...RC0},RT=null;
 const wst=()=>wxW();
 const PS=[['--second2','--base','--second1'],['--primal2','--base','--second1'],['--second1','--base','--second2'],['--primal1','--base','--second1'],['--second2','--base','--primal2']].map(r=>r.map(__cv));

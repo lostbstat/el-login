@@ -369,7 +369,7 @@
 
 <section id="p3" hidden>
 <div class="card" id="elCard">
-    <h2>🔌 <span data-i="hm_at"></span></h2>
+    <h2><span data-i="hm_at"></span></h2>
     <div class="note" data-i="an"></div>
     <div class="note" data-i="pl_an"></div>
     <div class="row">
@@ -398,16 +398,16 @@
 
 <section id="p4" hidden>
 <div id="po"></div>
-<div class="card"><h2 data-i="hm_s"></h2>
+<div class="card" id="planningSettingsCard"><h2 data-i="hm_s"></h2>
 <div class="row"><span data-i="pl_b"></span><input id="pb" type="number" placeholder="1500" oninput="plan()"><span data-i="pr"></span><input id="price" type="number" step="0.01" value="8" oninput="plan()"></div>
 <div class="row"><span data-i="pl_f"></span><input id="pf" type="number" value="0" oninput="plan()"><span data-i="pl_l"></span><input id="pw" type="number" value="2200" oninput="plan()"></div>
 <div class="note" data-i="pl_lh"></div><div class="note" id="pnote"></div></div>
+<div class="card ai" id="pai"><div class="row"><button type="button" id="pi" onclick="planAI()" data-i="pl_ai"></button></div><div class="note" id="ph"></div><div class="t" id="pv"></div></div>
 <div id="bc" hidden aria-hidden="true"><input id="bft" type="number" step="0.01" value="0.95"><input id="bu" type="number"><b id="bo1"></b><input id="ba" type="number"><b id="bo2"></b></div>
 <div class="card" id="oc"><h2 data-i="oc_t"></h2><div class="note" data-i="oc_n"></div>
 <div class="row"><span data-i="oc_u"></span><input id="ocu" type="number" oninput="occ()"><span data-i="oc_a"></span><input id="oca" type="number" oninput="occ()"><button class="g" onclick="ocl()" data-i="oc_l"></button></div>
 <div class="row"><span data-i="oc_mp"></span><input id="omp" type="number" oninput="occ()"><span data-i="oc_mc"></span><input id="omc" type="number" oninput="occ()"></div>
 <div id="oco"></div><div class="note" data-i="oc_w"></div></div>
-<div class="card ai" id="pai"><div class="row"><button id="pi" onclick="planAI()" data-i="pl_ai"></button></div><div class="note" id="ph"></div><div class="t" id="pv"></div></div>
 </section>
 </main>
 </div>
